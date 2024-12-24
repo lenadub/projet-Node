@@ -1,0 +1,12 @@
+.bookList {
+  list-style-type: none;
+  text-align: left;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 18px;
+
+}
+
+.bookItem {
+  display: inline;
+  margin-right: 20px;
+}

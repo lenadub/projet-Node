@@ -1,0 +1,5 @@
+.home{
+  background-color: lightpink;
+  flex-grow: 1;
+  width: 660px;
+}

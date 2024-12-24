@@ -1,0 +1,5 @@
+.orders {
+  background-color: beige;
+  flex-grow: 1;
+  width: 660px;
+}
