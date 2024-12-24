@@ -1,9 +1,10 @@
-import classes from "./OrdersPage.module.css"
+import React from "react";
+import classes from "./OrdersPage.module.css";
 
-function OrdersPage() {
-  return(
+const OrdersPage: React.FC = () => {
+  return (
     <div className={classes.orders}>orders</div>
-  )
-}
+  );
+};
 
-export default OrdersPage
+export default OrdersPage;

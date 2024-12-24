@@ -1,9 +1,10 @@
-import classes from './Header.module.css'
+import React from "react";
+import classes from './Header.module.css';
 
-function Header() {
-  return(
+const Header: React.FC = () => {
+  return (
     <div className={classes.header}>header</div>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;

@@ -1,9 +1,10 @@
-import classes from './Footer.module.css'
+import React from "react";
+import classes from './Footer.module.css';
 
-function Footer() {
-  return(
+const Footer: React.FC = () => {
+  return (
     <div className={classes.footer}>footer</div>
-  )
-}
+  );
+};
 
-export default Footer
+export default Footer;

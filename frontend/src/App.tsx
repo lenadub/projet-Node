@@ -1,11 +1,11 @@
 import './App.css'
 import { BrowserRouter, Routes, Route } from "react-router-dom"
-import HomePage from "./HomePage.tsx"
-import OrdersPage from "./OrdersPage.tsx"
-import CartPage from "./CartPage.tsx"
-import Layout from "./Layout.tsx"
+import HomePage from "./HomePage"
+import OrdersPage from "./OrdersPage"
+import CartPage from "./CartPage"
+import Layout from "./Layout"
 
-function App() {
+const App: React.FC = () => {
   return (
     <BrowserRouter>
       <Layout>

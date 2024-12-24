@@ -1,9 +1,10 @@
-import classes from "./HomePage.module.css"
+import React from "react";
+import classes from "./HomePage.module.css";
 
-function HomePage() {
-  return(
+const HomePage: React.FC = () => {
+  return (
     <div className={classes.home}>Home</div>
-  )
-}
+  );
+};
 
-export default HomePage
+export default HomePage;

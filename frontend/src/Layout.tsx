@@ -1,16 +1,21 @@
-import Header from "./Header.tsx"
-import Footer from "./Footer.tsx"
-import NavigationMenu from "./NavigationMenu.tsx"
+import React from "react";
+import Header from "./Header";
+import Footer from "./Footer";
+import NavigationMenu from "./NavigationMenu";
 
-function Layout({children}) {
-  return(
+interface LayoutProps {
+  children: React.ReactNode; // Typage de la propriété children
+}
+
+const Layout: React.FC<LayoutProps> = ({ children }) => {
+  return (
     <>
       <Header />
       <NavigationMenu />
       {children}
       <Footer />
     </>
-  )
-}
+  );
+};
 
-export default Layout
+export default Layout;
