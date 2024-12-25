@@ -1,11 +1,12 @@
 import pool from "./connect";
 
-async function createUser(username, email) {
+async function createUser(username, password, email) {
   const insert = `
-    insert into users(username, email)  values($1, $2)
+    insert into users(username,password, email)  values($1, $2, $3)
   `;
-  const values = [username, email];
-  await pool.query(insert, values);  //TODO check for errors, example: username not unique
+  const values = [username, password, email];
+  let users = await pool.query(insert, values);
+  return users;
 }
 
 async function findUser(userId) {
@@ -19,6 +20,20 @@ async function findUser(userId) {
   }
   return response.rows[0];
 }
+
+async function updateUserPassword(userId, newPassword) {
+  const updateQuery = `
+    update users
+    set password = $2
+    where id = $1
+  `;
+  const values = [userId, newPassword];
+  const response = await pool.query(updateQuery, values);
+  if (response.rowCount === 0) {
+    throw new Error("User not found or password update failed");
+  }
+}
+
 
 async function deleteUser(userId) {
   const deleteQuery = `
@@ -124,9 +139,91 @@ async function showBooks() {
   return response.rows;
 }
 
+// Orders Table Operations
+async function createOrder(userId, total, status = 'pending') {
+  const insert = `
+    INSERT INTO orders (user_id, total, status, created_at)
+    VALUES ($1, $2, $3, CURRENT_TIMESTAMP)
+    RETURNING *
+  `;
+  const values = [userId, total, status];
+  const response = await pool.query(insert, values);
+  return response.rows[0];
+}
+
+async function deleteOrder(orderId) {
+  const deleteQuery = `
+    DELETE FROM orders WHERE id = $1
+  `;
+  const values = [orderId];
+  await pool.query(deleteQuery, values);
+}
+
+async function findOrderByCustomer(userId) {
+  const select = `
+    SELECT * FROM orders WHERE user_id = $1
+  `;
+  const values = [userId];
+  const response = await pool.query(select, values);
+  return response.rows;
+}
+
+async function findOrderById(orderId) {
+  const select = `
+    SELECT * FROM orders WHERE id = $1
+  `;
+  const values = [orderId];
+  const response = await pool.query(select, values);
+  return response.rows[0];
+}
+
+async function updateOrderStatus(orderId, status) {
+  const update = `
+    UPDATE orders SET status = $2 WHERE id = $1
+    RETURNING *
+  `;
+  const values = [orderId, status];
+  const response = await pool.query(update, values);
+  if (response.rowCount === 0) {
+    throw new Error("Order not found or update failed");
+  }
+  return response.rows[0];
+}
+
+// Order Items Table Operations
+async function addOrderItem(orderId, bookId, quantity, price) {
+  const insert = `
+    INSERT INTO order_items (order_id, book_id, quantity, price)
+    VALUES ($1, $2, $3, $4)
+    RETURNING *
+  `;
+  const values = [orderId, bookId, quantity, price];
+  const response = await pool.query(insert, values);
+  return response.rows[0];
+}
+
+async function getOrderItemsByOrderId(orderId) {
+  const select = `
+    SELECT * FROM order_items WHERE order_id = $1
+  `;
+  const values = [orderId];
+  const response = await pool.query(select, values);
+  return response.rows;
+}
+
+async function deleteOrderItem(orderItemId) {
+  const deleteQuery = `
+    DELETE FROM order_items WHERE id = $1
+  `;
+  const values = [orderItemId];
+  await pool.query(deleteQuery, values);
+}
+
+
 export {
   createUser,
   findUser,
+  updateUserPassword,
   deleteUser,
   createBook,
   findBook,
@@ -137,5 +234,13 @@ export {
   replenishBookStock,
   getBookStock,
   showBooks,
-  findBookByTitle
+  findBookByTitle,
+  createOrder,
+  deleteOrder,
+  findOrderByCustomer,
+  findOrderById,
+  updateOrderStatus,
+  addOrderItem,
+  getOrderItemsByOrderId,
+  deleteOrderItem
 };
