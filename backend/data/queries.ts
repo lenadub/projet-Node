@@ -1,4 +1,4 @@
-import pool from "./connect.js"
+import pool from "./connect"
 
 async function createUser(username, email) {
   const insert = `
@@ -41,7 +41,7 @@ async function deleteBook(bookId) {}
 
 async function updateBook({title, author, editor, year, price, description}) {}
 
-async function showBooks(page=1) {
+async function showBooks() {
   const select = `select * from books`
   const response = await pool.query(select)
   return response.rows
