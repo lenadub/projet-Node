@@ -5,7 +5,7 @@ import { createUser, createBook } from "./queries"
 // we wrap this into an async function
 (async () => {
     // Create some users
-    await createUser("mickaël", "mickael.jackson@gmail.com");
+    await createUser("ldubois", "lena.dubois@gmail.com");
     await createUser("sfarges", "sarah.farges@gmail.com");
 
     // Create some books
@@ -15,7 +15,8 @@ import { createUser, createBook } from "./queries"
         editor: "penguin classics",
         year: 1878,
         price: 12.90,
-        description: "A romance taking place in the 19th century"
+        description: "A romance taking place in the 19th century",
+        stock:0
     });
 
     await createBook({
@@ -24,7 +25,8 @@ import { createUser, createBook } from "./queries"
         editor: "livre de poche",
         year: 1909,
         price: 10.50,
-        description: "A ghost story that's not really about ghosts"
+        description: "A ghost story that's not really about ghosts",
+        stock:0
     });
 
     await createBook({
@@ -33,7 +35,8 @@ import { createUser, createBook } from "./queries"
         editor: "penguin classics",
         year: 1925,
         price: 9.99,
-        description: "A story about living the American dream in the Roaring 20s with a touch of romance"
+        description: "A story about living the American dream in the Roaring 20s with a touch of romance",
+        stock:0
     });
 
     await createBook({
@@ -42,7 +45,8 @@ import { createUser, createBook } from "./queries"
         editor: "packt",
         year: 2022,
         price: 40.90,
-        description: "A great book for an advanced introduction to React"
+        description: "A great book for an advanced introduction to React",
+        stock:0
     });
 
     await createBook({
@@ -51,7 +55,8 @@ import { createUser, createBook } from "./queries"
         editor: "leanpub",
         year: 2023,
         price: 38.50,
-        description: "A nice introduction to React"
+        description: "A nice introduction to React",
+        stock:0
     });
 
     await createBook({
@@ -60,7 +65,8 @@ import { createUser, createBook } from "./queries"
         editor: "no starch press",
         year: 2018,
         price: 32.90,
-        description: "A Creative Commons book about modern javascript"
+        description: "A Creative Commons book about modern javascript",
+        stock:0
     });
 
     await createBook({
@@ -69,6 +75,7 @@ import { createUser, createBook } from "./queries"
         editor: "apress",
         year: 2017,
         price: 39.99,
-        description: "The latest standard of javascript: ES2015 and beyond"
+        description: "The latest standard of javascript: ES2015 and beyond",
+        stock:0
     });
 })();
