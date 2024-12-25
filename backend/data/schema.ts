@@ -19,10 +19,11 @@ const createBooks = `
                                         year INTEGER not null,
                                         price REAL not null,
                                         description TEXT,
+                                        stock INTEGER not null default 0,
                                         created_at TIMESTAMP,
                                         updated_at TIMESTAMP
     )
-`
+`;
 // create table shopping 'carts'
 // normally one per user, if users are managed by the app, or only 1 cart if no users
 const createCarts = `
