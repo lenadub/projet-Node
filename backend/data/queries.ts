@@ -75,7 +75,7 @@ async function findBook(bookRef) {
 }
 
 async function findBookByTitle(bookTitle) {
-  const select = `select * from books where LOWER(books.title) like '%${bookTitle}%'`;
+  const select = `select * from books where LOWER(books.title) like LOWER('%${bookTitle}%')`;
   const response = await pool.query(select);
   console.log(JSON.stringify(response.rows));
   return response.rows;
