@@ -6,41 +6,38 @@ The project contains a frontend app (React.js) and a backend API server (node.js
 
 ### How to get started
 
-#### Create a postgresql user and database
+#### Start the Backend
 
-```bash
-> sudo -u postgres psql
-#  create user demo with password 'demo';
-#  create database demo owner demo;
-# \q
-```
-
-#### Create the database schema (tables)
-
+To initialize the backend environment and subsequently run the backend if required, please run the command below using the Microsoft Windows  command terminal :
 ```bash
 > cd backend
-> npm run schema
+> call install.bat
 ```
 
-#### Seed the database with some data (users, books...)
+Note this script  above runs only on Microsoft Windows.
+The script will:
+- Install npm dependencies
+- Request the Postgres admin password
+- Drop the Postgress database demo if it exists
+- Drop the database user demo if it exists
+- Create database user demo
+- Creating database demo
+- Load database schema
+- Seed the database
+- Launch the backend if needed
 
+To simply launch the backend after **initialization is complete**,
+please go to the directory where the backend index.js is stored
+and then run :
 ```bash
 > cd backend
-> npm run seed
+> tsx index.js
 ```
 
-#### Start the backend API server
+By default, the backend listens on port 3000
 
-```bash
-> cd backend
-> npm run dev
-# Check API server is running on port 3000
-> curl localhost:3000
-  {"status": 200, "message": "API server OK"}
-# Type CONTROL C to stop the server
-```
 
-#### Start the frontend
+#### Start the Frontend
 
 ```bash
 > cd frontend
