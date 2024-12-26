@@ -1,9 +1,13 @@
 .bookList {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  row-gap:20px;
   list-style-type: none;
   text-align: left;
   font-family: Georgia, 'Times New Roman', Times, serif;
   font-size: 18px;
-
 }
 
 .bookItem {

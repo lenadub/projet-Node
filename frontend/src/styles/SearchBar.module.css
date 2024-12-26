@@ -1,0 +1,21 @@
+ .searchBar {
+  margin-top: 20px;
+  width: 640px;
+ }
+
+ .searchBox {
+  margin-bottom: 30px;
+  margin-left: 10px;
+  margin-right: 10px;
+  height: 32px;
+  width: 450px;
+ }
+
+ .searchButton {
+  height: 32px;
+  width: 46px;
+ }
+
+ .searchButton:hover {
+  cursor: pointer;
+ }

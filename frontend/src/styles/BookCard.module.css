@@ -1,0 +1,44 @@
+.bookCard {
+  background-color: white;
+  border: solid 2px lightgray;
+  box-shadow: 5px 5px 5px gray;
+  font-size: 16px;
+  padding: 10px;
+  width: 340px;
+  text-decoration: none; /* Supprime les styles de lien */
+  color: inherit; /* Assure que le texte garde sa couleur par défaut */
+}
+
+.bookCard:hover {
+  cursor: pointer;
+}
+
+.title {
+  font-weight: bold;
+  font-size: 18px;
+  margin: 2px;
+}
+
+.title:first-letter {
+  text-transform: capitalize;
+}
+
+.image {
+  background-color: lightgray;
+  float: left;
+  display: block;
+  margin: auto;
+  margin-right: 14px;
+  width: 120px;
+}
+
+.item {
+  margin: 0;
+  padding: 0;
+}
+
+/* Supprime les styles par défaut des liens */
+.bookCard a {
+  text-decoration: none;
+  color: inherit;
+}

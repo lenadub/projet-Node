@@ -440,7 +440,7 @@ router.get('/books', async (req, res) => {
  *       404:
  *         description: Book not found
  */
-router.get('/books/id/:id', async (req, res) => {
+router.get('/books/:id', async (req, res) => {
     const bookId = parseInt(req.params.id);
     try {
         const book = await findBook(bookId);
@@ -491,7 +491,7 @@ router.get('/books/id/:id', async (req, res) => {
  *       404:
  *         description: No books found with the given title
  */
-router.get('/books/search', async (req, res) => {
+router.post('/books/search', async (req, res) => {
     console.log('Entering findBookByTitle route');
     const bookTitle = req.query.title;
     try {
@@ -542,6 +542,7 @@ router.get('/books/search', async (req, res) => {
  *       500:
  *         description: Internal server error
  */
+// Définition de la route pour créer un livre
 router.post('/books', async (req, res) => {
     const { title, author, editor, year, price, description } = req.body;
 
@@ -552,7 +553,7 @@ router.post('/books', async (req, res) => {
     }
 
     try {
-        const bookData = { title, author, editor, year, price, description,stock:0 };
+        const bookData = { title, author, editor, year, price, description, stock: 0 };
         const createdBook = await createBook(bookData);
         res.status(201);
         res.json(createdBook);
@@ -560,177 +561,71 @@ router.post('/books', async (req, res) => {
         res.status(500);
         res.json({ error: 'Error creating book' });
     }
+});
 
-    /**
-     * @swagger
-     * /books/consume/{id}:
-     *   put:
-     *     summary: Consume a book stock by decrementing its count
-     *     tags: [Books]
-     *     parameters:
-     *       - in: path
-     *         name: id
-     *         required: true
-     *         schema:
-     *           type: integer
-     *         description: Book ID
-     *     responses:
-     *       200:
-     *         description: Book stock decremented
-     *       404:
-     *         description: Book out of stock or not found
-     */
-    router.put('/books/consume/:id', async (req, res) => {
-        const bookId = parseInt(req.params.id);
-        try {
-            await consumeBookStock(bookId);
-            res.status(200);
-            res.json({ message: "Book stock decremented" });
-        } catch (error) {
-            res.status(404);
-            res.json({ error: error.message });
-        }
-    });
-
-    /**
-     * @swagger
-     * /books/replenish/{id}:
-     *   put:
-     *     summary: Replenish the stock of a book
-     *     tags: [Books]
-     *     parameters:
-     *       - in: path
-     *         name: id
-     *         required: true
-     *         schema:
-     *           type: integer
-     *         description: Book ID
-     *     requestBody:
-     *       required: true
-     *       content:
-     *         application/json:
-     *           schema:
-     *             type: object
-     *             properties:
-     *               amount:
-     *                 type: integer
-     *     responses:
-     *       200:
-     *         description: Book stock replenished
-     */
-    router.put('/books/replenish/:id', async (req, res) => {
-        const bookId = parseInt(req.params.id);
-        const { amount } = req.body;
-        if (!amount || amount < 1) {
-            res.status(400);
-            res.json({ error: "Invalid amount to replenish" });
-            return;
-        }
-        try {
-            await replenishBookStock(bookId, amount);
-            res.status(200);
-            res.json({ message: "Book stock replenished" });
-        } catch (error) {
-            res.status(500);
-            res.json({ error: error.message });
-        }
-    });
-
-    /**
-     * @swagger
-     * /books/stock/{id}:
-     *   get:
-     *     summary: Get the stock of a specific book
-     *     tags: [Books]
-     *     parameters:
-     *       - in: path
-     *         name: id
-     *         required: true
-     *         schema:
-     *           type: integer
-     *         description: Book ID
-     *     responses:
-     *       200:
-     *         description: Book stock retrieved successfully
-     *         content:
-     *           application/json:
-     *             schema:
-     *               type: object
-     *               properties:
-     *                 stock:
-     *                   type: integer
-     *       404:
-     *         description: Book not found
-     */
-    router.get('/books/stock/:id', async (req, res) => {
-        const bookId = parseInt(req.params.id);
-        try {
-            const stock = await getBookStock(bookId);
-            res.status(200);
-            res.json({ stock });
-        } catch (error) {
-            res.status(404);
-            res.json({ error: error.message });
-        }
-    });
-
-
-    /**
-     * @swagger
-     * /books/{id}:
-     *   delete:
-     *     summary: Delete a book by ID
-     *     tags: [Books]
-     *     parameters:
-     *       - in: path
-     *         name: id
-     *         required: true
-     *         schema:
-     *           type: integer
-     *         description: Book ID
-     *     responses:
-     *       200:
-     *         description: Book deleted successfully
-     *       404:
-     *         description: Book not found
-     */
-    router.delete('/books/:id', async (req, res) => {
-        const bookId = parseInt(req.params.id);
-        try {
-            await deleteBook(bookId);
-            res.status(200);
-            res.json({ message: "Book deleted successfully" });
-        } catch (error) {
-            res.status(500);
-            res.json({ error: error.message });
-        }
-    });
-
-
-    ////////////////// ROOT ///////////////
-    /**
-     * @swagger
-     * /:
-     *   get:
-     *     summary: Check API status
-     *     tags: [Health]
-     *     responses:
-     *       200:
-     *         description: API server is OK
-     *         content:
-     *           application/json:
-     *             schema:
-     *               type: object
-     *               properties:
-     *                 status:
-     *                   type: integer
-     *                 message:
-     *                   type: string
-     */
-    router.get('/', async (req, res) => {
-        console.log('Entering route');
+// Route pour consommer un stock de livre
+router.put('/books/consume/:id', async (req, res) => {
+    const bookId = parseInt(req.params.id);
+    try {
+        await consumeBookStock(bookId);
         res.status(200);
-        res.json({ "status": 200, "message": "API server OK" });
-    });
+        res.json({ message: "Book stock decremented" });
+    } catch (error) {
+        res.status(404);
+        res.json({ error: error.message });
+    }
+});
 
+// Route pour réapprovisionner le stock d'un livre
+router.put('/books/replenish/:id', async (req, res) => {
+    const bookId = parseInt(req.params.id);
+    const { amount } = req.body;
+
+    if (!amount || amount < 1) {
+        res.status(400);
+        res.json({ error: "Invalid amount to replenish" });
+        return;
+    }
+
+    try {
+        await replenishBookStock(bookId, amount);
+        res.status(200);
+        res.json({ message: "Book stock replenished" });
+    } catch (error) {
+        res.status(500);
+        res.json({ error: error.message });
+    }
+});
+
+// Route pour obtenir le stock d'un livre
+router.get('/books/stock/:id', async (req, res) => {
+    const bookId = parseInt(req.params.id);
+    try {
+        const stock = await getBookStock(bookId);
+        res.status(200);
+        res.json({ stock });
+    } catch (error) {
+        res.status(404);
+        res.json({ error: error.message });
+    }
+});
+
+// Route pour supprimer un livre (commentée dans ton code)
+// router.delete('/books/:id', async (req, res) => {
+//     const bookId = parseInt(req.params.id);
+//     try {
+//         await deleteBook(bookId);
+//         res.status(200);
+//         res.json({ message: "Book deleted successfully" });
+//     } catch (error) {
+//         res.status(500);
+//         res.json({ error: error.message });
+//     }
+// });
+
+// Route pour vérifier l'état de l'API
+router.get('/', async (req, res) => {
+    console.log('Entering route');
+    res.status(200);
+    res.json({ "status": 200, "message": "API server OK" });
 });

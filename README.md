@@ -18,7 +18,7 @@ The project contains a frontend app (React.js) and a backend API server (node.js
 #### Create the database schema (tables)
 
 ```bash
-> cd backend
+> cd backend 
 > npm run schema
 ```
 
@@ -33,7 +33,9 @@ The project contains a frontend app (React.js) and a backend API server (node.js
 
 ```bash
 > cd backend
+
 > npm run dev
+
 # Check API server is running on port 3000
 > curl localhost:3000
   {"status": 200, "message": "API server OK"}

@@ -44,13 +44,13 @@ async function deleteUser(userId) {
 }
 
 // CRUD operations on a book + books list
-async function createBook({title, author, editor, year, price, description, stock}) {
+async function createBook({title, author, editor, year, price, description, cover,stock}) {
   const insert = `
-    insert into books(title, author, editor, year, price, description, stock, created_at, updated_at)
-    values($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    insert into books(title, author, editor, year, price, description, cover, stock, created_at, updated_at)
+    values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
   `;
   const currentDate = new Date();
-  const values = [title, author, editor, year, price, description, stock, currentDate, currentDate];
+  const values = [title, author, editor, year, price, description, cover, stock, currentDate, currentDate];
   let books = await pool.query(insert, values);
   return books;
 }
@@ -62,11 +62,10 @@ async function findBook(bookId) {
 }
 
 async function findBookByTitle(bookTitle) {
-  console.log('execute');
-  const select = `select * from books where books.title like '%${bookTitle}%'`;
-  const response = await pool.query(select);
-  console.log(JSON.stringify(response.rows));
-  return response.rows;
+  const select = `select * from books where LOWER(books.title) like '%${bookTitle}%'`
+  const response = await pool.query(select)
+  // console.log(JSON.stringify(response.rows))
+  return response.rows
 }
 
 async function deleteBook(bookId) {
