@@ -1,0 +1,16 @@
+
+up to date, audited 88 packages in 2s
+
+16 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+                                 version                                 
+-------------------------------------------------------------------------
+ PostgreSQL 17.2 on x86_64-windows, compiled by msvc-19.41.34123, 64-bit
+(1 ligne)
+
+DROP DATABASE
+DROP ROLE
+CREATE ROLE
+CREATE DATABASE
