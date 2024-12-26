@@ -60,3 +60,38 @@
 .placeOrderButton:hover {
   background-color: #a5d6db;
 }
+
+.removeButton {
+  background-color: #ff4d4d;
+  color: white;
+  font-size: 14px;
+  padding: 6px 12px;
+  margin-top: 14px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.removeButton:hover {
+  background-color: #ff1a1a;
+}
+
+.orderConfirmation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #46c840;
+  color: white;
+  border-radius: 8px;
+  margin-top: 20px;
+  max-width: 200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.checkMark {
+  font-size: 20px;
+  margin-right: 10px;
+}
+
