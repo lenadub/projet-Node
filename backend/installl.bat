@@ -7,7 +7,7 @@ SET DB_NAME=demo
 SET DB_USER=demo
 SET DB_PASSWORD=demo
 SET CURRENTDIR=%CD%
-SET LOGFILE=%CURRENTDIR%\create_database.log
+SET LOGFILE=%CURRENTDIR%\install.log
 
 if exist "%LOGFILE%" (
     del "%LOGFILE%"
