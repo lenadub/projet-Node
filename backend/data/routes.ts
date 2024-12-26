@@ -26,7 +26,7 @@ import {
     findOrderById,
     findOrderByCustomer,
     deleteOrder,
-    createOrder
+    createOrder, computeOrderTotal
 } from "./queries";
 
 export const router = express.Router();
@@ -67,9 +67,9 @@ router.get('/', async (req, res) => {
  *     tags: [Orders]
  */
 router.post('/orders', async (req, res) => {
-    const { userId, total, status } = req.body;
+    const { userId,  status } = req.body;
     try {
-        const order = await createOrder(userId, total, status);
+        const order = await createOrder(userId, status);
         res.status(201);
         res.json(order);
     } catch (error) {
@@ -122,16 +122,41 @@ router.get('/orders/user/:userId', async (req, res) => {
  *   get:
  *     summary: Find an order by ID
  *     tags: [Orders]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: The ID of the order
+ *     responses:
+ *       200:
+ *         description: The order details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                 items:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 total:
+ *                   type: number
+ *       400:
+ *         description: Invalid order ID
+ *       500:
+ *         description: Internal server error
  */
 router.get('/orders/:id', async (req, res) => {
     const orderId = parseInt(req.params.id);
     try {
         const order = await findOrderById(orderId);
-        res.status(200);
-        res.json(order);
+        res.status(200).json(order);
     } catch (error) {
-        res.status(500);
-        res.json({ error: error.message });
+        res.status(500).json({ error: error.message });
     }
 });
 
@@ -141,19 +166,89 @@ router.get('/orders/:id', async (req, res) => {
  *   put:
  *     summary: Update the status of an order
  *     tags: [Orders]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: The ID of the order
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: The updated order details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       400:
+ *         description: Invalid input
+ *       500:
+ *         description: Internal server error
  */
 router.put('/orders/:id/status', async (req, res) => {
     const orderId = parseInt(req.params.id);
     const { status } = req.body;
     try {
         const order = await updateOrderStatus(orderId, status);
-        res.status(200);
-        res.json(order);
+        res.status(200).json(order);
     } catch (error) {
-        res.status(500);
-        res.json({ error: error.message });
+        res.status(500).json({ error: error.message });
     }
 });
+
+/**
+ * @swagger
+ * /orders/{id}/total:
+ *   get:
+ *     summary: Get the total cost of an order
+ *     tags: [Orders]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: The ID of the order
+ *     responses:
+ *       200:
+ *         description: The total cost of the order
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 orderId:
+ *                   type: integer
+ *                 total:
+ *                   type: number
+ *       400:
+ *         description: Invalid order ID
+ *       500:
+ *         description: Internal server error
+ */
+router.get('/orders/:id/total', async (req, res) => {
+    const orderId = parseInt(req.params.id);
+    if (isNaN(orderId)) {
+        return res.status(400).json({ error: 'Invalid order ID' });
+    }
+
+    try {
+        const total = await computeOrderTotal(orderId);
+        res.status(200).json({ orderId, total });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 
 
 ////////////////// ORDER ITEMS ///////////////
@@ -449,7 +544,7 @@ router.put('/users/:id/password', async (req, res) => {
  *               items:
  *                 type: object
  *                 properties:
- *                   id:
+ *                   reference:
  *                     type: integer
  *                   title:
  *                     type: string
@@ -484,17 +579,17 @@ router.get('/books', async (req, res) => {
 
 /**
  * @swagger
- * /books/id/{id}:
+ * /books/reference/{reference}:
  *   get:
- *     summary: Get a book by ID
+ *     summary: Get a book by Reference
  *     tags: [Books]
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: reference
  *         required: true
  *         schema:
  *           type: integer
- *         description: Book ID
+ *         description: Book Reference
  *     responses:
  *       200:
  *         description: The book details
@@ -503,7 +598,7 @@ router.get('/books', async (req, res) => {
  *             schema:
  *               type: object
  *               properties:
- *                 id:
+ *                 reference:
  *                   type: integer
  *                 title:
  *                   type: string
@@ -520,10 +615,10 @@ router.get('/books', async (req, res) => {
  *       404:
  *         description: Book not found
  */
-router.get('/books/id/:id', async (req, res) => {
-    const bookId = parseInt(req.params.id);
+router.get('/books/reference/:reference', async (req, res) => {
+    const bookRef = parseInt(req.params.reference);
     try {
-        const book = await findBook(bookId);
+        const book = await findBook(bookRef);
         res.json(book);
     } catch (error) {
         res.status(404);
@@ -554,7 +649,7 @@ router.get('/books/id/:id', async (req, res) => {
  *               items:
  *                 type: object
  *                 properties:
- *                   id:
+ *                   reference:
  *                     type: integer
  *                   title:
  *                     type: string
@@ -613,7 +708,7 @@ router.get('/books/search', async (req, res) => {
  *                 type: number
  *               description:
  *                 type: string
- *             required: ["id", "title", "author", "editor", "year", "price", "description"]
+ *             required: ["reference", "title", "author", "editor", "year", "price", "description"]
  *     responses:
  *       201:
  *         description: Book created successfully
@@ -623,16 +718,16 @@ router.get('/books/search', async (req, res) => {
  *         description: Internal server error
  */
 router.post('/books', async (req, res) => {
-    const { title, author, editor, year, price, description } = req.body;
+    const { reference, title, author, editor, year, price, description } = req.body;
 
-    if (!title || !author || !editor || !year || !price || !description) {
+    if (!reference || !title || !author || !editor || !year || !price || !description) {
         res.status(400);
         res.json({ error: 'Missing fields to create book entry' });
         return res;
     }
 
     try {
-        const bookData = { title, author, editor, year, price, description,stock:0 };
+        const bookData = { reference, title, author, editor, year, price, description,stock:0 };
         const createdBook = await createBook(bookData);
         res.status(201);
         res.json(createdBook);
@@ -643,27 +738,27 @@ router.post('/books', async (req, res) => {
 
     /**
      * @swagger
-     * /books/consume/{id}:
+     * /books/consume/{reference}:
      *   put:
      *     summary: Consume a book stock by decrementing its count
      *     tags: [Books]
      *     parameters:
      *       - in: path
-     *         name: id
+     *         name: reference
      *         required: true
      *         schema:
      *           type: integer
-     *         description: Book ID
+     *         description: Book Reference
      *     responses:
      *       200:
      *         description: Book stock decremented
      *       404:
      *         description: Book out of stock or not found
      */
-    router.put('/books/consume/:id', async (req, res) => {
-        const bookId = parseInt(req.params.id);
+    router.put('/books/consume/:reference', async (req, res) => {
+        const bookRef = parseInt(req.params.reference);
         try {
-            await consumeBookStock(bookId);
+            await consumeBookStock(bookRef);
             res.status(200);
             res.json({ message: "Book stock decremented" });
         } catch (error) {
@@ -674,17 +769,17 @@ router.post('/books', async (req, res) => {
 
     /**
      * @swagger
-     * /books/replenish/{id}:
+     * /books/replenish/{reference}:
      *   put:
      *     summary: Replenish the stock of a book
      *     tags: [Books]
      *     parameters:
      *       - in: path
-     *         name: id
+     *         name: reference
      *         required: true
      *         schema:
      *           type: integer
-     *         description: Book ID
+     *         description: Book Reference
      *     requestBody:
      *       required: true
      *       content:
@@ -698,8 +793,8 @@ router.post('/books', async (req, res) => {
      *       200:
      *         description: Book stock replenished
      */
-    router.put('/books/replenish/:id', async (req, res) => {
-        const bookId = parseInt(req.params.id);
+    router.put('/books/replenish/:reference', async (req, res) => {
+        const bookRef = parseInt(req.params.reference);
         const { amount } = req.body;
         if (!amount || amount < 1) {
             res.status(400);
@@ -707,7 +802,7 @@ router.post('/books', async (req, res) => {
             return;
         }
         try {
-            await replenishBookStock(bookId, amount);
+            await replenishBookStock(bookRef, amount);
             res.status(200);
             res.json({ message: "Book stock replenished" });
         } catch (error) {
@@ -718,17 +813,17 @@ router.post('/books', async (req, res) => {
 
     /**
      * @swagger
-     * /books/stock/{id}:
+     * /books/stock/{reference}:
      *   get:
      *     summary: Get the stock of a specific book
      *     tags: [Books]
      *     parameters:
      *       - in: path
-     *         name: id
+     *         name: reference
      *         required: true
      *         schema:
      *           type: integer
-     *         description: Book ID
+     *         description: Book Reference
      *     responses:
      *       200:
      *         description: Book stock retrieved successfully
@@ -742,10 +837,10 @@ router.post('/books', async (req, res) => {
      *       404:
      *         description: Book not found
      */
-    router.get('/books/stock/:id', async (req, res) => {
-        const bookId = parseInt(req.params.id);
+    router.get('/books/stock/:reference', async (req, res) => {
+        const bookRef = parseInt(req.params.reference);
         try {
-            const stock = await getBookStock(bookId);
+            const stock = await getBookStock(bookRef);
             res.status(200);
             res.json({ stock });
         } catch (error) {
@@ -757,27 +852,27 @@ router.post('/books', async (req, res) => {
 
     /**
      * @swagger
-     * /books/{id}:
+     * /books/{reference}:
      *   delete:
-     *     summary: Delete a book by ID
+     *     summary: Delete a book by Reference
      *     tags: [Books]
      *     parameters:
      *       - in: path
-     *         name: id
+     *         name: reference
      *         required: true
      *         schema:
      *           type: integer
-     *         description: Book ID
+     *         description: Book Reference
      *     responses:
      *       200:
      *         description: Book deleted successfully
      *       404:
      *         description: Book not found
      */
-    router.delete('/books/:id', async (req, res) => {
-        const bookId = parseInt(req.params.id);
+    router.delete('/books/:reference', async (req, res) => {
+        const bookRef = parseInt(req.params.reference);
         try {
-            await deleteBook(bookId);
+            await deleteBook(bookRef);
             res.status(200);
             res.json({ message: "Book deleted successfully" });
         } catch (error) {

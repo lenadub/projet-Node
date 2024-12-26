@@ -57,19 +57,19 @@ async function deleteUser(userId) {
 }
 
 // CRUD operations on a book + books list
-async function createBook({title, author, editor, year, price, description, stock}) {
+async function createBook({reference, title, author, editor, year, price, description, stock}) {
   const insert = `
-    insert into books(title, author, editor, year, price, description, stock, created_at, updated_at)
-    values($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    insert into books(reference, title, author, editor, year, price, description, stock, created_at, updated_at)
+    values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
   `;
   const currentDate = new Date();
-  const values = [title, author, editor, year, price, description, stock, currentDate, currentDate];
+  const values = [reference, title, author, editor, year, price, description, stock, currentDate, currentDate];
   let books = await pool.query(insert, values);
   return books;
 }
 
-async function findBook(bookId) {
-  const select = `select * from books where books.id='${bookId}'`;
+async function findBook(bookRef) {
+  const select = `select * from books where books.reference='${bookRef}'`;
   const response = await pool.query(select);
   return response.rows[0];
 }
@@ -82,11 +82,11 @@ async function findBookByTitle(bookTitle) {
   return response.rows;
 }
 
-async function deleteBook(bookId) {
+async function deleteBook(bookRef) {
   const deleteQuery = `
-    delete from books where id=$1
+    delete from books where reference=$1
   `;
-  const values = [bookId];
+  const values = [bookRef];
   await pool.query(deleteQuery, values);
 }
 
@@ -98,47 +98,47 @@ async function deleteBookByTitle(bookTitle) {
   await pool.query(deleteQuery, values);
 }
 
-async function updateBook({id, title, author, editor, year, price, description, stock}) {
+async function updateBook({reference, title, author, editor, year, price, description, stock}) {
   const updateQuery = `
     update books
     set title=$2, author=$3, editor=$4, year=$5, price=$6, description=$7, stock=$8, updated_at=$9
-    where id=$1
+    where reference=$1
   `;
   const currentDate = new Date();
-  const values = [id, title, author, editor, year, price, description, stock, currentDate];
+  const values = [reference, title, author, editor, year, price, description, stock, currentDate];
   await pool.query(updateQuery, values);
 }
 
-async function consumeBookStock(bookId) {
+async function consumeBookStock(bookRef) {
   const updateQuery = `
     update books
     set stock = stock - 1, updated_at = $2
-    where id = $1 and stock > 0
+    where reference = $1 and stock > 0
   `;
   const currentDate = new Date();
-  const values = [bookId, currentDate];
+  const values = [bookRef, currentDate];
   const response = await pool.query(updateQuery, values);
   if (response.rowCount === 0) {
     throw new Error("Book out of stock or not found");
   }
 }
 
-async function replenishBookStock(bookId, amount) {
+async function replenishBookStock(bookRef, amount) {
   const updateQuery = `
     update books
     set stock = stock + $2, updated_at = $3
-    where id = $1
+    where reference = $1
   `;
   const currentDate = new Date();
-  const values = [bookId, amount, currentDate];
+  const values = [bookRef, amount, currentDate];
   await pool.query(updateQuery, values);
 }
 
-async function getBookStock(bookId) {
+async function getBookStock(bookRef) {
   const select = `
-    select stock from books where id = $1
+    select stock from books where reference = $1
   `;
-  const values = [bookId];
+  const values = [bookRef];
   const response = await pool.query(select, values);
   if (response.rows.length === 0) {
     throw new Error("Book not found");
@@ -153,13 +153,13 @@ async function showBooks() {
 }
 
 // Orders Table Operations
-async function createOrder(userId, total, status = 'pending') {
+async function createOrder(userId,status = 'pending') {
   const insert = `
-    INSERT INTO orders (user_id, total, status, created_at)
-    VALUES ($1, $2, $3, CURRENT_TIMESTAMP)
+    INSERT INTO orders (user_id,  status, created_at)
+    VALUES ($1, $2, CURRENT_TIMESTAMP)
     RETURNING *
   `;
-  const values = [userId, total, status];
+  const values = [userId,  status];
   const response = await pool.query(insert, values);
   return response.rows[0];
 }
@@ -232,6 +232,24 @@ async function deleteOrderItem(orderItemId) {
   await pool.query(deleteQuery, values);
 }
 
+async function computeOrderTotal(orderId) {
+  const query = `
+        SELECT SUM(quantity * price) AS total_price
+        FROM order_items
+        WHERE order_id = $1;
+    `;
+  const values = [orderId];
+
+  try {
+    const result = await pool.query(query, values);
+    const totalPrice = result.rows[0].total_price;
+    return totalPrice || 0; // Return 0 if no items are found
+  } catch (error) {
+    console.error('Error computing order total:', error.message);
+    throw new Error('Unable to compute order total');
+  }
+}
+
 
 export {
   createUser,
@@ -256,5 +274,6 @@ export {
   updateOrderStatus,
   addOrderItem,
   getOrderItemsByOrderId,
-  deleteOrderItem
+  deleteOrderItem,
+  computeOrderTotal
 };
