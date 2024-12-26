@@ -13,10 +13,11 @@ if exist "%LOGFILE%" (
     del "%LOGFILE%"
 )
 
+REM ==== DELETING DATABSE ? ====
 REM Display prompt and get user input
 :prompt
 echo !!! THIS SCRIPT WILL DELETE THE DATABASE PRIOR TO RUNNING THE BACKEND !!!
-choice /m "Do you want to proceed (Y/N) - type ENTER to retry if you typed a different choice : " /c YN /n
+choice /m "Do you want to proceed (choose Y/N) - type ENTER to retry if you typed a different choice : " /c YN /n
 
 REM Check user's choice
 if %errorlevel%==1 (
@@ -143,7 +144,7 @@ IF %ERRORLEVEL% NEQ 0 (
 
 REM ==== RUN BACKEND ====
 REM Display prompt and get user input
-choice /m "Do you want to start backend? - type ENTER to retry if you typed a different choice :" /c YN /n
+choice /m "Do you want to start backend (choose Y/N)? - type ENTER to retry if you typed a different choice :" /c YN /n
 
 REM Check user's choice
 if %errorlevel%==2 (
