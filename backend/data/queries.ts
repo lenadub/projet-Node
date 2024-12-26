@@ -2,11 +2,11 @@ import pool from "./connect";
 
 async function createUser(username, password, email) {
   const insert = `
-    insert into users(username,password, email)  values($1, $2, $3)
+    insert into users(username,password, email)  values($1, $2, $3) RETURNING id
   `;
   const values = [username, password, email];
-  let users = await pool.query(insert, values);
-  return users;
+  let response = await pool.query(insert, values);
+  return response.rows[0];
 }
 
 async function findUser(userId) {
@@ -60,12 +60,12 @@ async function deleteUser(userId) {
 async function createBook({reference, title, author, editor, year, price, description, stock}) {
   const insert = `
     insert into books(reference, title, author, editor, year, price, description, stock, created_at, updated_at)
-    values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+    values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING reference
   `;
   const currentDate = new Date();
   const values = [reference, title, author, editor, year, price, description, stock, currentDate, currentDate];
-  let books = await pool.query(insert, values);
-  return books;
+  let response = await pool.query(insert, values);
+  return response.rows[0];
 }
 
 async function findBook(bookRef) {
