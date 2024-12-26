@@ -1,7 +1,7 @@
 @echo off
 
 REM Configuration
-SET DEFAULT_PSQL="C:\Program Files\PostgreSQL\17\bin\psql.exe"
+SET DEFAULT_PSQL=C:\Program Files\PostgreSQL\17\bin\psql.exe
 SET DEFAULT_BACKEND_DIR=%CD%
 SET DB_NAME=demo
 SET DB_USER=demo
@@ -46,7 +46,7 @@ if not exist "%BACKEND_DIR%\" (
 
 REM ==== NPM DEPEDENCIS  ====
 REM Go to backend directory
-cd %BACKEND_DIR%
+cd "%BACKEND_DIR%"
 
 REM Install npm dependencies
 echo Installing npm dependencies...
@@ -68,8 +68,8 @@ if "%PSQL%"=="" (
  )
 
  REM Check if the command exists
- if not exist %PSQL% (
-     echo Error: invalid path for PSQL command  : %PSQL%
+ if not exist "%PSQL%" (
+     echo Error: invalid path for PSQL command  : "%PSQL%"
      exit /b 1
  )
 
@@ -82,7 +82,8 @@ set /p PGPASSWORD="Enter password for PostgreSQL 'postgres': "
 REM ==== PSQL CNX ====
 REM Check PostgreSQL connection
 echo Checking PostgreSQL connection...
-%PSQL% -U postgres -c "SELECT version();" >> %LOGFILE% 2>>&1
+echo %PSQL%
+"%PSQL%" -U postgres -c "SELECT version();" >> %LOGFILE% 2>>&1
 IF %ERRORLEVEL% NEQ 0 (
     SET ERROR_MSG=Cannot connect to PostgreSQL. Ensure it is running and the password is correct.
     goto handle_error
@@ -94,7 +95,7 @@ echo    Connection successful!
 REM ==== DB INIT ====
 REM Drop database if it exists
 echo Dropping database if it exists...
-%PSQL% -U postgres -c "DROP DATABASE IF EXISTS %DB_NAME%;" >> %LOGFILE% 2>>&1
+"%PSQL%" -U postgres -c "DROP DATABASE IF EXISTS %DB_NAME%;" >> %LOGFILE% 2>>&1
 IF %ERRORLEVEL% NEQ 0 (
     SET ERROR_MSG=Cannot drop database.
     goto handle_error
@@ -102,7 +103,7 @@ IF %ERRORLEVEL% NEQ 0 (
 
 REM Drop user if it exists
 echo Dropping user if it exists...
-%PSQL% -U postgres -c "DROP ROLE IF EXISTS %DB_USER%;" >> %LOGFILE% 2>>&1
+"%PSQL%" -U postgres -c "DROP ROLE IF EXISTS %DB_USER%;" >> %LOGFILE% 2>>&1
 IF %ERRORLEVEL% NEQ 0 (
     SET ERROR_MSG=Cannot drop user.
     goto handle_error
@@ -110,7 +111,7 @@ IF %ERRORLEVEL% NEQ 0 (
 
 REM Create database user
 echo Creating database user...
-%PSQL% -U postgres -c "CREATE USER %DB_USER% WITH PASSWORD '%DB_PASSWORD%';" >> %LOGFILE% 2>>&1
+"%PSQL%" -U postgres -c "CREATE USER %DB_USER% WITH PASSWORD '%DB_PASSWORD%';" >> %LOGFILE% 2>>&1
 IF %ERRORLEVEL% NEQ 0 (
     SET ERROR_MSG=Cannot create user.
     goto handle_error
@@ -118,7 +119,7 @@ IF %ERRORLEVEL% NEQ 0 (
 
 REM Create database
 echo Creating database...
-%PSQL% -U postgres -c "CREATE DATABASE %DB_NAME% OWNER %DB_USER%;" >> %LOGFILE% 2>>&1 
+"%PSQL%" -U postgres -c "CREATE DATABASE %DB_NAME% OWNER %DB_USER%;" >> %LOGFILE% 2>>&1
 IF %ERRORLEVEL% NEQ 0 (
     SET ERROR_MSG=Cannot create database.
     goto handle_error
