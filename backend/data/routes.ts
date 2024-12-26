@@ -720,16 +720,16 @@ router.get('/books/search', async (req, res) => {
  *         description: Internal server error
  */
 router.post('/books', async (req, res) => {
-    const { reference, title, author, editor, year, price, description } = req.body;
+    const { reference, title, author, editor, year, price, description,cover } = req.body;
 
-    if (!reference || !title || !author || !editor || !year || !price || !description) {
+    if (!reference || !title || !author || !editor || !year || !price || !description || !cover) {
         res.status(400);
         res.json({ error: 'Missing fields to create book entry' });
         return res;
     }
 
     try {
-        const bookData = { reference, title, author, editor, year, price, description,stock:0 };
+        const bookData = { reference, title, author, editor, year, price, description,cover,stock:0 };
         const createdBook = await createBook(bookData);
         res.status(201);
         res.json(createdBook);

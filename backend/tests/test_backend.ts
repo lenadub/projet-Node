@@ -4,6 +4,8 @@ import { router } from '../data/routes';
 import pool from "../data/connect";
 
 const app= express();
+
+
 app.use(express.json());
 app.use('/', router);
 
@@ -95,13 +97,14 @@ describe('API Routes', () => {
 //     ////////////////// BOOKS ///////////////
     it('should create a book', async () => {
         const bookData = {
-            reference:8,
+            reference:13,
             title: 'Test Book',
             author: 'Test Author',
             editor: 'Test Editor',
             year: 2023,
             price: 15.99,
             description: 'A test book',
+            cover: "/images/cover-12.jpg"
         };
         const response = await request(app).post('/books').send(bookData);
         expect(response.statusCode).toBe(201);
@@ -110,7 +113,7 @@ describe('API Routes', () => {
     });
 
     it('should fail to create a book with missing required fields', async () => {
-        // Missing required fields: reference, title and author
+        // Missing required fields: reference, cover, title and author
         const incompleteBookData = {
             editor: 'Test Editor',
             year: 2023,

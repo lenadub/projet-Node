@@ -14,6 +14,7 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization'], // En-têtes autorisés
 };
 
+console.log('Starting...')
 // Appliquer le middleware CORS
 app.use(cors(corsOptions));
 
