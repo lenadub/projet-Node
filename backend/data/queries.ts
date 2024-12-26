@@ -21,6 +21,19 @@ async function findUser(userId) {
   return response.rows[0];
 }
 
+async function findUserbyName(userName) {
+  const select = `
+    select * from users where username=$1
+  `;
+  const values = [userName];
+  const response = await pool.query(select, values);
+  if (response.rows.length === 0) {
+    throw new Error("User not found");
+  }
+  return response.rows[0];
+}
+
+
 async function updateUserPassword(userId, newPassword) {
   const updateQuery = `
     update users
@@ -223,10 +236,12 @@ async function deleteOrderItem(orderItemId) {
 export {
   createUser,
   findUser,
+  findUserbyName,
   updateUserPassword,
   deleteUser,
   createBook,
   findBook,
+  findBookByTitle,
   deleteBook,
   deleteBookByTitle,
   updateBook,
@@ -234,7 +249,6 @@ export {
   replenishBookStock,
   getBookStock,
   showBooks,
-  findBookByTitle,
   createOrder,
   deleteOrder,
   findOrderByCustomer,
