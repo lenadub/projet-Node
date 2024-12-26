@@ -4,21 +4,25 @@
   "main": "index.js",
   "scripts": {
     "test": "jest"
-    },
+  },
   "compilerOptions": {
     "esModuleInterop": true,
-      "skipLibCheck": true
+    "skipLibCheck": true
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@types/jest": "^29.5.14",
     "cors": "^2.8.5",
     "express": "^5.0.1",
+    "jest": "^29.7.0",
     "pg": "^8.13.1",
+    "supertest": "^7.0.0",
     "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-ui-express": "^5.0.1",
+    "ts-jest": "^29.2.5"
   },
   "devDependencies": {
     "tsx": "^4.19.2"
