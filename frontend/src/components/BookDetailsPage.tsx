@@ -3,7 +3,7 @@ import { useState, useEffect } from "react"
 import classes from "../styles/BookDetailsPage.module.css"
 
 function BookDetailsPage() {
-  const { id } = useParams() // Get the book ID from the URL
+  const { reference } = useParams() // Get the book ID from the URL
   const [book, setBook] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -17,7 +17,7 @@ function BookDetailsPage() {
   useEffect(() => {
     const fetchBookDetails = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/books/${id}`)
+        const response = await fetch(`http://localhost:3000/books/reference/${reference}`)
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`)
         }
@@ -31,7 +31,7 @@ function BookDetailsPage() {
     }
 
     fetchBookDetails();
-  }, [id])
+  }, [reference])
 
   if (loading) return <p>Loading...</p>
   if (error) return <p>Error: {error}</p>

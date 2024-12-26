@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 function BookCard(props) {
   const endpoint = "http://localhost:3000"
   return(
-    <Link to={`/book/${props.book.id}`} className={classes.bookCard}>
+    <Link to={`/book/reference/${props.book.reference}`} className={classes.bookCard}>
       {/* Le lien dirige vers la page des détails */}
       <img
         className={classes.image}

@@ -52,7 +52,6 @@ export const router = express.Router();
  *                   type: string
  */
 router.get('/', async (req, res) => {
-    console.log('Entering root');
     res.status(200);
     res.json({ "status": 200, "message": "API server OK" });
 });
@@ -562,7 +561,6 @@ router.put('/users/:id/password', async (req, res) => {
  *         description: No books found
  */
 router.get('/books', async (req, res) => {
-    console.log('Entering showBooks route');
     try {
         const books = await showBooks();
         if (books.length === 0) {
@@ -667,7 +665,6 @@ router.get('/books/reference/:reference', async (req, res) => {
  *         description: No books found with the given title
  */
 router.get('/books/search', async (req, res) => {
-    console.log('Entering findBookByTitle route');
     const bookTitle = req.query.title;
     try {
         const books = await findBookByTitle(bookTitle);
