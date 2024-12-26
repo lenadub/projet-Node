@@ -16,7 +16,7 @@ if exist "%LOGFILE%" (
 REM ==== DELETING DATABSE ? ====
 REM Display prompt and get user input
 :prompt
-echo !!! THIS SCRIPT WILL DELETE THE DATABASE PRIOR TO RUNNING THE BACKEND !!!
+echo !!! THIS SCRIPT WILL DELETE THE DATABASE %DB_NAME% PRIOR TO RUNNING THE BACKEND !!!
 choice /m "Do you want to proceed (choose Y/N) - type ENTER to retry if you typed a different choice : " /c YN /n
 
 REM Check user's choice
@@ -94,7 +94,7 @@ echo    Connection successful!
 
 REM ==== DB INIT ====
 REM Drop database if it exists
-echo Dropping database if it exists...
+echo Dropping database %DB_NAME% if it exists...
 "%PSQL%" -U postgres -c "DROP DATABASE IF EXISTS %DB_NAME%;" >> %LOGFILE% 2>>&1
 IF %ERRORLEVEL% NEQ 0 (
     SET ERROR_MSG=Cannot drop database.
@@ -102,7 +102,7 @@ IF %ERRORLEVEL% NEQ 0 (
 )
 
 REM Drop user if it exists
-echo Dropping user if it exists...
+echo Dropping user %DB_USER% if it exists...
 "%PSQL%" -U postgres -c "DROP ROLE IF EXISTS %DB_USER%;" >> %LOGFILE% 2>>&1
 IF %ERRORLEVEL% NEQ 0 (
     SET ERROR_MSG=Cannot drop user.
@@ -110,7 +110,7 @@ IF %ERRORLEVEL% NEQ 0 (
 )
 
 REM Create database user
-echo Creating database user...
+echo Creating database user %DB_USER%...
 "%PSQL%" -U postgres -c "CREATE USER %DB_USER% WITH PASSWORD '%DB_PASSWORD%';" >> %LOGFILE% 2>>&1
 IF %ERRORLEVEL% NEQ 0 (
     SET ERROR_MSG=Cannot create user.
@@ -118,7 +118,7 @@ IF %ERRORLEVEL% NEQ 0 (
 )
 
 REM Create database
-echo Creating database...
+echo Creating database %DB_NAME% ...
 "%PSQL%" -U postgres -c "CREATE DATABASE %DB_NAME% OWNER %DB_USER%;" >> %LOGFILE% 2>>&1
 IF %ERRORLEVEL% NEQ 0 (
     SET ERROR_MSG=Cannot create database.
