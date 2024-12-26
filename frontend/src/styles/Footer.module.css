@@ -1,0 +1,9 @@
+.footer {
+  background-color: rgb(66, 64, 64);
+  border: 0;
+  margin: 0;
+  padding: 0;
+  color: rgb(219, 213, 213);
+  line-height: 40px;
+  width: 100%;
+}
