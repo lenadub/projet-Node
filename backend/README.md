@@ -6,4 +6,4 @@ Note this script  above runs only on Microsoft Windows
 To simply launch the backend after initialization, 
 please go to the directory where the backend index.js is stored 
 and then run :   
-- tsx index.js_ 
+- tsx index.js
