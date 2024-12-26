@@ -57,13 +57,13 @@ async function deleteUser(userId) {
 }
 
 // CRUD operations on a book + books list
-async function createBook({reference, title, author, editor, year, price, description, stock}) {
+async function createBook({reference, title, author, editor, year, price, description, cover, stock}) {
   const insert = `
-    insert into books(reference, title, author, editor, year, price, description, stock, created_at, updated_at)
-    values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING reference
+    insert into books(reference, title, author, editor, year, price, description, cover, stock, created_at, updated_at)
+    values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10,$11) RETURNING reference
   `;
   const currentDate = new Date();
-  const values = [reference, title, author, editor, year, price, description, stock, currentDate, currentDate];
+  const values = [reference, title, author, editor, year, price, description, cover, stock, currentDate, currentDate];
   let response = await pool.query(insert, values);
   return response.rows[0];
 }
@@ -75,8 +75,7 @@ async function findBook(bookRef) {
 }
 
 async function findBookByTitle(bookTitle) {
-  console.log('execute');
-  const select = `select * from books where books.title like '%${bookTitle}%'`;
+  const select = `select * from books where LOWER(books.title) like '%${bookTitle}%'`;
   const response = await pool.query(select);
   console.log(JSON.stringify(response.rows));
   return response.rows;
@@ -98,14 +97,14 @@ async function deleteBookByTitle(bookTitle) {
   await pool.query(deleteQuery, values);
 }
 
-async function updateBook({reference, title, author, editor, year, price, description, stock}) {
+async function updateBook({reference, title, author, editor, year, price, description, cover, stock}) {
   const updateQuery = `
     update books
-    set title=$2, author=$3, editor=$4, year=$5, price=$6, description=$7, stock=$8, updated_at=$9
+    set title=$2, author=$3, editor=$4, year=$5, price=$6, description=$7, cover=$8, stock=$9, updated_at=$10
     where reference=$1
   `;
   const currentDate = new Date();
-  const values = [reference, title, author, editor, year, price, description, stock, currentDate];
+  const values = [reference, title, author, editor, year, price, description, cover, stock, currentDate];
   await pool.query(updateQuery, values);
 }
 
