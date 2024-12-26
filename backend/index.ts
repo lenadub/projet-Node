@@ -32,53 +32,11 @@ const swaggerOptions = {
       description: 'API for managing products',
     },
   },
-  apis: ['./route.ts'], // Path to the file with Swagger annotations
+  apis: ['.data/routes.ts'], // Path to the file with Swagger annotations
 };
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
-
-// // Define home route
-// app.get('/', (req, res) => {
-//   console.log("  Request GET /")
-//   res.status(200)
-//   res.json({"status": 200, "message": "API server OK"})
-// })
-//
-// app.get("/books", async (req, res) => {
-//   let books = await showBooks()
-//   console.log("  Request GET /books")
-//   // console.log(`  fetched books: ${JSON.stringify(books)}`)
-//   res.status(200)
-//   res.json(books)
-// })
-//
-// app.get("/books/search", async (req, res) => {
-//   let book = await findBookByTitle(req.query.title)
-//   console.log(`  Request GET /books/search with title: ${req.query.title}`)
-//   res.status(200)
-//   res.json(book)
-// })
-//
-//
-// app.get("/books/:id", async (req, res) => {
-//   let book = await findBook(req.params.id)
-//   console.log(`  Request GET /books/:id with param id: ${req.params.id}`)
-//   res.status(200)
-//   res.json(book)
-// })
-//
-// // Route to create books from the portal
-// // To be used by the ecommerce site admin
-// app.post("/books", async (req, res) => {
-//   let book = await createBook(req.body)
-//    console.log(`  Request POST /books/ with param id: ${req.params.id}`)
-//    res.status(201)
-//    res.json(book)
-//  })
-//
-//
 
 // Prevent CORS errors
 app.use(function(req, res, next) {
