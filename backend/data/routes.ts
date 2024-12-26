@@ -696,6 +696,8 @@ router.get('/books/search', async (req, res) => {
  *           schema:
  *             type: object
  *             properties:
+ *               reference:
+ *                 type: string
  *               title:
  *                 type: string
  *               author:
