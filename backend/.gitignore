@@ -11,4 +11,3 @@ node_modules
 *.sln
 *.sw?
 node_modules/*
-*install.log
