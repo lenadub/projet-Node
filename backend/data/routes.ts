@@ -1,10 +1,16 @@
-import express from 'express';
+// Had to amend the import for the unitary tests to work
+// for more detail, see : https://stackoverflow.com/questions/71055340/getting-undefined-import-of-postgres-in-jest
+// previous import was : import express from 'express';
+import * as express from 'express';
+
 import {
     createUser,
     findUser,
+    findUserbyName,
     createBook,
     findBook,
     deleteBook,
+    deleteBookByTitle,
     updateBook,
     showBooks,
     findBookByTitle,
@@ -24,6 +30,32 @@ import {
 } from "./queries";
 
 export const router = express.Router();
+
+////////////////// ROOT ///////////////
+/**
+ * @swagger
+ * /:
+ *   get:
+ *     summary: Check API status
+ *     tags: [Health]
+ *     responses:
+ *       200:
+ *         description: API server is OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                 message:
+ *                   type: string
+ */
+router.get('/', async (req, res) => {
+    console.log('Entering root');
+    res.status(200);
+    res.json({ "status": 200, "message": "API server OK" });
+});
 
 ////////////////// ORDERS ///////////////
 
@@ -269,6 +301,54 @@ router.get('/users/:id', async (req, res) => {
     } catch (error) {
         res.status(404);
         res.json({ error: error.message });
+    }
+});
+
+/**
+ * @swagger
+ * /users/name/{name}:
+ *   get:
+ *     summary: Find a user by name
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: name
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Name of the user
+ *     responses:
+ *       200:
+ *         description: User retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                 username:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
+ */
+router.get('/users/name/:name', async (req, res) => {
+    const userName = req.params.name;
+    try {
+        const user = await findUserbyName(userName);
+        res.status(200).json(user);
+    } catch (error) {
+        if (error.message === 'User not found') {
+            res.status(404);
+            res.json({ error: error.message });
+        } else {
+            res.status(500);
+            res.json({ error: error.message });
+        }
     }
 });
 
@@ -706,31 +786,38 @@ router.post('/books', async (req, res) => {
         }
     });
 
-
-    ////////////////// ROOT ///////////////
     /**
      * @swagger
-     * /:
-     *   get:
-     *     summary: Check API status
-     *     tags: [Health]
+     * /books/title/{title}:
+     *   delete:
+     *     summary: Delete books by title
+     *     tags: [Books]
+     *     parameters:
+     *       - in: path
+     *         name: title
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: Title of the book
      *     responses:
      *       200:
-     *         description: API server is OK
-     *         content:
-     *           application/json:
-     *             schema:
-     *               type: object
-     *               properties:
-     *                 status:
-     *                   type: integer
-     *                 message:
-     *                   type: string
+     *         description: Book(s) deleted successfully
+     *       404:
+     *         description: No book found with the given title
+     *       500:
+     *         description: Internal server error
      */
-    router.get('/', async (req, res) => {
-        console.log('Entering route');
-        res.status(200);
-        res.json({ "status": 200, "message": "API server OK" });
+    router.delete('/books/title/:title', async (req, res) => {
+        const bookTitle = req.params.title;
+        try {
+            await deleteBookByTitle(bookTitle);
+            res.status(200);
+            res.json({ message: 'Book(s) deleted successfully' });
+        } catch (error) {
+            res.status(500);
+            res.json({ error: error.message });
+        }
     });
+
 
 });
