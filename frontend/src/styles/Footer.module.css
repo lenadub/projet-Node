@@ -6,4 +6,19 @@
   color: rgb(219, 213, 213);
   line-height: 40px;
   width: 100%;
+  box-sizing: border-box; /* Ensure proper box-sizing */
+  position: relative; /* Ensure the footer is positioned correctly */
+  bottom: 0; /* Stick the footer to the bottom */
+}
+
+/* Ensure no margin collapsing */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+/* Ensure the footer is at the bottom of the page */
+.content {
+  min-height: calc(100vh - 40px); /* Adjust based on the footer height */
 }

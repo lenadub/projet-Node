@@ -1,5 +1,5 @@
 import classes from "../styles/BookList.module.css"
-import BookCard from "./BookCard.js"
+import BookCard from "./BookCard"
 
 function BookList(props) {
   // console.log(`books: ${JSON.stringify(props)}`)

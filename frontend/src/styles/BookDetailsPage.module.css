@@ -1,7 +1,7 @@
 /* Position the back button at the top left of the screen */
 .backButton {
   position: fixed; /* Position it fixed at the top left of the page */
-  top: 20px;
+  top: 35px;
   left: 20px;
   background-color: transparent;
   border: none;
@@ -13,12 +13,9 @@
   z-index: 10; /* Make sure the back button is above other content */
 }
 
-.backButton:hover {
-  color: #007bff; /* Change color when hovered */
-}
 
 .arrow {
-  font-size: 30px; /* Larger arrow size */
+  font-size: 35px; /* Larger arrow size */
   margin-right: 20px; /* Space between the arrow and the text */
 }
 
@@ -26,28 +23,38 @@
 .bookDetails {
   display: flex;
   flex-direction: row;
-  padding: 20px;
-  max-width: 1200px;
+  align-items: flex-start; /* Align items to the top */
+  justify-content: center; /* Center the content horizontally */
+  padding: 27px;
+  max-width: 750px;
   margin: 0 auto;
   text-align: left;
   margin-top: 60px; /* Add top margin to avoid the back button covering the content */
 }
 
 .coverSection {
-  flex: 1;
-  margin-right: 20px;
+  flex: 0 0 300px; /* Fixed width for the image section */
+  margin-right: 20px; /* Consistent margin between image and description */
+  display: flex;
+  justify-content: center; /* Center the image horizontally */
+  align-items: center; /* Center the image vertically */
 }
 
 .coverImage {
-  width: 100%;
-  max-width: 300px;
-  height: auto;
+  max-width: 100%; /* Keep images responsive */
+  max-height: 450px; /* Consistent height for image area */
   border: 1px solid #ddd;
   box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
+  display: block; /* Ensures consistent rendering */
+}
+
+.coverImage:hover {
+  transform: scale(1.03); /* Slightly enlarge the image on hover */
+  box-shadow: 5px 5px 15px rgba(51, 206, 149, 0.2); /* Enhanced shadow on hover */
 }
 
 .detailsSection {
-  flex: 2;
+  flex: 1; /* Take the remaining space */
   display: flex;
   flex-direction: column;
   text-align: left;
@@ -78,7 +85,7 @@
 }
 
 .addToCartButton {
-  background-color: #b2eee6;
+  background-color: #62cfc1;
   color: white;
   font-size: 18px;
   padding: 10px 20px;
