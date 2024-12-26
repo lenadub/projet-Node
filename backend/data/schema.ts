@@ -13,7 +13,7 @@ const createUsers = `
 // create table 'books'
 const createBooks = `
     create table if not exists books(
-                                        id SERIAL primary key,
+                                        reference INTEGER primary key,
                                         title TEXT not null,
                                         author TEXT not null,
                                         editor TEXT not null,
@@ -36,7 +36,6 @@ const createOrders = `
   CREATE TABLE IF NOT EXISTS orders (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    total NUMERIC(10, 2) NOT NULL,
     status VARCHAR(10) NOT NULL CHECK (status IN ('pending', 'completed', 'cancelled')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )
@@ -47,7 +46,7 @@ const createOrderItems = `
   CREATE TABLE IF NOT EXISTS order_items (
     id SERIAL PRIMARY KEY,
     order_id INTEGER NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
-    book_id INTEGER NOT NULL REFERENCES books(id),
+    book_id INTEGER NOT NULL REFERENCES books(reference),
     quantity INTEGER NOT NULL CHECK (quantity > 0),
     price NUMERIC(10, 2) NOT NULL
 )
