@@ -2,8 +2,16 @@
 // UNITARY TESTS MODULE
 //
 
+// Import the SuperTest library for HTTP testing
+// The * import syntax used for compatibility with both ESM and CommonJS modules. 
+// Here required for testing
 import * as request from "supertest";
+
+// Import Express to create the web server and handle HTTP requests
+// The * import syntax used for compatibility with both ESM and CommonJS modules. 
+// Here required for testing
 import * as express from 'express';
+
 import { router } from '../data/routes';
 import pool from "../data/connect";
 
