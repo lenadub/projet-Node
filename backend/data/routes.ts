@@ -844,7 +844,7 @@ router.put('/users/:id/password', async (req, res) => {
  *                 properties:
  *                   reference:
  *                     type: integer
- *                       description: The reference ID of the book
+ *                     description: The reference ID of the book
  *                   title:
  *                     type: string
  *                     description: The title of the book
