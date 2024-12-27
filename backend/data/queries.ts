@@ -1,16 +1,23 @@
+// import psql pool
 import pool from "./connect";
 
-
 /////// USERS //////
+// Creates a new user in the database with provided credentials
+// Returns the newly created user's ID
 async function createUser(username, password, email) {
   const insert = `
-    insert into users(username,password, email)  values($1, $2, $3) RETURNING id
+    insert into users(username,password, email)
+    values($1, $2, $3) RETURNING id
   `;
   const values = [username, password, email];
   let response = await pool.query(insert, values);
+
+  // Return rows[0]. Should include user id if no error
   return response.rows[0];
 }
 
+// Retrieves user information by user ID
+// Throws error if user is not found
 async function findUser(userId) {
   const select = `
     select * from users where id=$1
@@ -20,9 +27,12 @@ async function findUser(userId) {
   if (response.rows.length === 0) {
     throw new Error("User not found");
   }
+  // Return rows[0]. Should include user data if no error
   return response.rows[0];
 }
 
+// Searches for a user by  username
+// Throws error if user is not found
 async function findUserbyName(userName) {
   const select = `
     select * from users where username=$1
@@ -32,10 +42,12 @@ async function findUserbyName(userName) {
   if (response.rows.length === 0) {
     throw new Error("User not found");
   }
+  // Return rows[0]. Should include user data if no error
   return response.rows[0];
 }
 
-
+// Updates user's password in the database
+// Throws error if user not found or update fails
 async function updateUserPassword(userId, newPassword) {
   const updateQuery = `
     update users
@@ -47,9 +59,12 @@ async function updateUserPassword(userId, newPassword) {
   if (response.rowCount === 0) {
     throw new Error("User not found or password update failed");
   }
+
+  // Return rows[0]. Should include new user data if no error
+  // Newpassword is inckuded (not very secure)
 }
 
-
+// Removes a user from the database by their ID
 async function deleteUser(userId) {
   const deleteQuery = `
     delete from users where id=$1
@@ -58,9 +73,10 @@ async function deleteUser(userId) {
   await pool.query(deleteQuery, values);
 }
 
-
 /////// BOOKS //////
-// CRUD operations on a book + books list
+// Creates a new book entry with all book details
+// Automatically sets creation and update timestamps
+// Returns the book's reference number
 async function createBook({reference, title, author, editor, year, price, description, cover, stock}) {
   const insert = `
     insert into books(reference, title, author, editor, year, price, description, cover, stock, created_at, updated_at)
@@ -69,22 +85,32 @@ async function createBook({reference, title, author, editor, year, price, descri
   const currentDate = new Date();
   const values = [reference, title, author, editor, year, price, description, cover, stock, currentDate, currentDate];
   let response = await pool.query(insert, values);
+
+  // Return rows[0]. Should include book reference if no error
   return response.rows[0];
 }
 
+// Retrieves book information by reference number
 async function findBook(bookRef) {
   const select = `select * from books where books.reference='${bookRef}'`;
   const response = await pool.query(select);
+
+  // Return rows[0]. Should include book data if no error
   return response.rows[0];
 }
 
+// Searches for books by title (case-insensitive partial match)
+// Returns array of matching books
 async function findBookByTitle(bookTitle) {
   const select = `select * from books where LOWER(books.title) like LOWER('%${bookTitle}%')`;
   const response = await pool.query(select);
-  console.log(JSON.stringify(response.rows));
+  // console.log(JSON.stringify(response.rows));
+
+  // Return rows[0]. Should include book data if no error
   return response.rows;
 }
 
+// Removes a book from database by reference number
 async function deleteBook(bookRef) {
   const deleteQuery = `
     delete from books where reference=$1
@@ -93,6 +119,7 @@ async function deleteBook(bookRef) {
   await pool.query(deleteQuery, values);
 }
 
+// Removes books from database matching partial title
 async function deleteBookByTitle(bookTitle) {
   const deleteQuery = `
     delete from books where title like $1
@@ -101,6 +128,8 @@ async function deleteBookByTitle(bookTitle) {
   await pool.query(deleteQuery, values);
 }
 
+// Updates book information except reference number
+// Updates the 'updated_at' timestamp
 async function updateBook({reference, title, author, editor, year, price, description, cover, stock}) {
   const updateQuery = `
     update books
@@ -112,6 +141,8 @@ async function updateBook({reference, title, author, editor, year, price, descri
   await pool.query(updateQuery, values);
 }
 
+// Decrements book stock by 1 if available
+// Throws error if book is out of stock or not found
 async function consumeBookStock(bookRef) {
   const updateQuery = `
     update books
@@ -126,6 +157,7 @@ async function consumeBookStock(bookRef) {
   }
 }
 
+// Increases book stock by specified amount
 async function replenishBookStock(bookRef, amount) {
   const updateQuery = `
     update books
@@ -137,6 +169,8 @@ async function replenishBookStock(bookRef, amount) {
   await pool.query(updateQuery, values);
 }
 
+// Retrieves current stock level of a book
+// Throws error if book not found
 async function getBookStock(bookRef) {
   const select = `
     select stock from books where reference = $1
@@ -146,27 +180,36 @@ async function getBookStock(bookRef) {
   if (response.rows.length === 0) {
     throw new Error("Book not found");
   }
+  // Return rows[0]. Should include stock if no error
   return response.rows[0].stock;
 }
 
+// Retrieves all books from database
 async function showBooks() {
   const select = `select * from books`;
   const response = await pool.query(select);
+
+  // return all rows. Should include all books if no error
   return response.rows;
 }
 
 /////// ORDERS //////
-async function createOrder(userId,status = 'pending') {
+// Creates new order for user with optional status
+// Returns the created order details
+async function createOrder(userId, status = 'pending') {
   const insert = `
     INSERT INTO orders (user_id,  status, created_at)
     VALUES ($1, $2, CURRENT_TIMESTAMP)
     RETURNING *
   `;
-  const values = [userId,  status];
+  const values = [userId, status];
   const response = await pool.query(insert, values);
+
+  // Should include order Id if no error
   return response.rows[0];
 }
 
+// Removes an order from database
 async function deleteOrder(orderId) {
   const deleteQuery = `
     DELETE FROM orders WHERE id = $1
@@ -175,6 +218,8 @@ async function deleteOrder(orderId) {
   await pool.query(deleteQuery, values);
 }
 
+// Retrieves all orders for a specific user
+// Throws error if no orders found
 async function findOrderByCustomer(userId) {
   const select = `
     SELECT * FROM orders WHERE user_id = $1
@@ -184,9 +229,13 @@ async function findOrderByCustomer(userId) {
   if (response.rowCount === 0) {
     throw new Error("Order not found");
   }
+
+  // return all rows. Should include all orders if no error
   return response.rows;
 }
 
+// Retrieves specific order by ID
+// Throws error if order not found
 async function findOrderById(orderId) {
   const select = `
     SELECT * FROM orders WHERE id = $1
@@ -196,9 +245,12 @@ async function findOrderById(orderId) {
   if (response.rowCount === 0) {
     throw new Error("Order not found");
   }
+  //  Should include order data if no error
   return response.rows[0];
 }
 
+// Updates order status and returns updated order
+// Throws error if order not found or update fails
 async function updateOrderStatus(orderId, status) {
   const update = `
     UPDATE orders SET status = $2 WHERE id = $1
@@ -213,6 +265,8 @@ async function updateOrderStatus(orderId, status) {
 }
 
 /////// ORDER ITEMS //////
+// Adds item to an existing order
+// Returns the created order item details
 async function addOrderItem(orderId, bookId, quantity, price) {
   const insert = `
     INSERT INTO order_items (order_id, book_id, quantity, price)
@@ -221,9 +275,13 @@ async function addOrderItem(orderId, bookId, quantity, price) {
   `;
   const values = [orderId, bookId, quantity, price];
   const response = await pool.query(insert, values);
+
+  //  Should include order-item Id if no error
   return response.rows[0];
 }
 
+// Retrieves all items in a specific order
+// Throws error if no items found
 async function getOrderItemsByOrderId(orderId) {
   const select = `
     SELECT * FROM order_items WHERE order_id = $1
@@ -233,9 +291,12 @@ async function getOrderItemsByOrderId(orderId) {
   if (response.rowCount === 0) {
     throw new Error("Order Item not found");
   }
+
+  //  Should include  all order-items Id for the order if no error
   return response.rows;
 }
 
+// Removes specific item from an order
 async function deleteOrderItem(orderItemId) {
   const deleteQuery = `
     DELETE FROM order_items WHERE id = $1
@@ -244,14 +305,15 @@ async function deleteOrderItem(orderItemId) {
   await pool.query(deleteQuery, values);
 }
 
+// Calculates total price of all items in an order
+// Returns 0 if order has no items
 async function computeOrderTotal(orderId) {
   const query = `
-        SELECT SUM(quantity * price) AS total_price
-        FROM order_items
-        WHERE order_id = $1;
-    `;
+    SELECT SUM(quantity * price) AS total_price
+    FROM order_items
+    WHERE order_id = $1;
+  `;
   const values = [orderId];
-
   try {
     const result = await pool.query(query, values);
     const totalPrice = result.rows[0].total_price;
@@ -261,7 +323,6 @@ async function computeOrderTotal(orderId) {
     throw new Error('Unable to compute order total');
   }
 }
-
 
 export {
   createUser,
