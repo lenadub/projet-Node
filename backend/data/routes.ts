@@ -70,7 +70,7 @@ export const router = express.Router();
  *                 message:
  *                   type: string
  */
-router.get('/', async (req, res) => {
+router.get('/', async (req: express.Request, res: express.Response): Promise<void> => {
     res.status(200);
     res.json({ "status": 200, "message": "API server OK" });
 });
@@ -110,7 +110,7 @@ router.get('/', async (req, res) => {
  *                   example: Book out of stock or not found
  */
 
-router.put('/books/consume/:reference', async (req, res) => {
+router.put('/books/consume/:reference', async (req: express.Request, res: express.Response): Promise<void> => {
     const bookRef = parseInt(req.params.reference);
     try {
         await consumeBookStock(bookRef);
@@ -178,7 +178,7 @@ router.put('/books/consume/:reference', async (req, res) => {
  *                 error:
  *                   type: string
  */
-router.put('/books/replenish/:reference', async (req, res) => {
+router.put('/books/replenish/:reference', async (req: express.Request, res: express.Response): Promise<void> => {
 
     const bookRef = parseInt(req.params.reference);
     const { amount } = req.body;
@@ -232,7 +232,7 @@ router.put('/books/replenish/:reference', async (req, res) => {
  *                   type: string
  *                   example: Book not found
  */
-router.get('/books/stock/:reference', async (req, res) => {
+router.get('/books/stock/:reference', async (req: express.Request, res: express.Response): Promise<void> => {
     const bookRef = parseInt(req.params.reference);
     try {
         const stock = await getBookStock(bookRef);
@@ -286,7 +286,7 @@ router.get('/books/stock/:reference', async (req, res) => {
  *       500:
  *        description: Cannot create Order
  */
-router.post('/orders', async (req, res) => {
+router.post('/orders', async (req: express.Request, res: express.Response): Promise<void> => {
     const { userId,  status } = req.body;
     try {
         const order = await createOrder(userId, status);
@@ -325,7 +325,7 @@ router.post('/orders', async (req, res) => {
  *       500:
  *         description: Cannot delete Order
  */
-router.delete('/orders/:id', async (req, res) => {
+router.delete('/orders/:id', async (req: express.Request, res: express.Response): Promise<void> => {
     const orderId = parseInt(req.params.id);
     try {
         await deleteOrder(orderId);
@@ -380,7 +380,7 @@ router.delete('/orders/:id', async (req, res) => {
  *                   type: string
  *                   example: Order not found
  */
-router.get('/orders/user/:userId', async (req, res) => {
+router.get('/orders/user/:userId', async (req: express.Request, res: express.Response): Promise<void> => {
     const userId = parseInt(req.params.userId);
     try {
         const orders = await findOrderByCustomer(userId);
@@ -435,7 +435,7 @@ router.get('/orders/user/:userId', async (req, res) => {
  */
 
 
-router.get('/orders/:id', async (req, res) => {
+router.get('/orders/:id', async (req: express.Request, res: express.Response): Promise<void> => {
     const orderId = parseInt(req.params.id);
     try {
         const order = await findOrderById(orderId);
@@ -498,7 +498,7 @@ router.get('/orders/:id', async (req, res) => {
  *                   type: string
  *                   example: Order not found or update failed
  */
-router.put('/orders/:id/status', async (req, res) => {
+router.put('/orders/:id/status', async (req: express.Request, res: express.Response): Promise<void> => {
     const orderId = parseInt(req.params.id);
     const { status } = req.body;
     try {
@@ -547,7 +547,7 @@ router.put('/orders/:id/status', async (req, res) => {
  *                   type: string
  *                   example: Unable to compute order total
  */
-router.get('/orders/:id/total', async (req, res) => {
+router.get('/orders/:id/total', async (req: express.Request, res: express.Response): Promise<void> => {
     const orderId = parseInt(req.params.id);
     if (isNaN(orderId)) {
         return res.status(400).json({ error: 'Invalid order ID' });
@@ -615,7 +615,7 @@ router.get('/orders/:id/total', async (req, res) => {
  *       500:
  *          description: Cannot create Order Item
  */
-router.post('/order-items', async (req, res) => {
+router.post('/order-items', async (req: express.Request, res: express.Response): Promise<void> => {
     const { orderId, bookId, quantity, price } = req.body;
     try {
         const orderItem = await addOrderItem(orderId, bookId, quantity, price);
@@ -672,7 +672,7 @@ router.post('/order-items', async (req, res) => {
  *                   example: Order Item not found
  */
 
-router.get('/order-items/order/:orderId', async (req, res) => {
+router.get('/order-items/order/:orderId', async (req: express.Request, res: express.Response): Promise<void> => {
     const orderId = parseInt(req.params.orderId);
     try {
         const items = await getOrderItemsByOrderId(orderId);
@@ -712,7 +712,7 @@ router.get('/order-items/order/:orderId', async (req, res) => {
  *          description: Cannot delete Order Item
  */
 
-router.delete('/order-items/:id', async (req, res) => {
+router.delete('/order-items/:id', async (req: express.Request, res: express.Response): Promise<void> => {
     const orderItemId = parseInt(req.params.id);
     try {
         await deleteOrderItem(orderItemId);
@@ -778,7 +778,7 @@ router.delete('/order-items/:id', async (req, res) => {
  *         description: Cannot create User
  */
 
-router.post('/users', async (req, res) => {
+router.post('/users', async (req: express.Request, res: express.Response): Promise<void> => {
     const { username, password,email } = req.body;
     if (!username || !email || !password) {
         res.status(400).json({ error: "Missing required fields" });
@@ -833,7 +833,7 @@ router.post('/users', async (req, res) => {
  *                   type: string
  *                   example: User not found
  */
-router.get('/users/:id', async (req, res) => {
+router.get('/users/:id', async (req: express.Request, res: express.Response): Promise<void> => {
     const userId = parseInt(req.params.id);
     try {
         const user = await findUser(userId);
@@ -887,7 +887,7 @@ router.get('/users/:id', async (req, res) => {
  *                   example: User not found
  */
 
-router.get('/users/name/:name', async (req, res) => {
+router.get('/users/name/:name', async (req: express.Request, res: express.Response): Promise<void> => {
     const userName = req.params.name;
     try {
         const user = await findUserbyName(userName);
@@ -923,7 +923,7 @@ router.get('/users/name/:name', async (req, res) => {
  *       404:
  *         description: Cannot delete user
  */
-router.delete('/users/:id', async (req, res) => {
+router.delete('/users/:id', async (req: express.Request, res: express.Response): Promise<void> => {
     const userId = parseInt(req.params.id);
     try {
         await deleteUser(userId);
