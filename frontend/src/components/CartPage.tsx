@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import classes from "../styles/CartPage.module.css";
 
 interface Book {
+  reference: number;
   title: string;
   author: string;
   price: number;
@@ -36,7 +37,7 @@ function CartPage() {
   
     // Replenish stock by 1 using the new backend route
     try {
-      const response = await fetch(`http://localhost:3000/books/stock/replenish/${bookToRemove.reference}`, {
+      const response = await fetch(`http://localhost:3000/books/replenish/${bookToRemove.reference}`, {
         method: 'PUT', // PUT request to replenish stock
         headers: {
           'Content-Type': 'application/json',
