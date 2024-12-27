@@ -44,7 +44,7 @@ function BookDetailsPage() {
 
     try {
       // Decrement stock
-      const response = await fetch(`http://localhost:3000/books/stock/${book.reference}`, {
+      const response = await fetch(`http://localhost:3000/books/consume/${book.reference}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
