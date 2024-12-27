@@ -33,7 +33,7 @@ const swaggerOptions = {
       description: 'API for managing products',
     },
   },
-  apis: ['.data/routes.ts'], // Path to the file with Swagger annotations
+  apis: ['./data/routes.ts'], // Path to the file with Swagger annotations
 };
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
