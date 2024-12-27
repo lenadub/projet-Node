@@ -1,5 +1,7 @@
 import pool from "./connect";
 
+
+/////// USERS //////
 async function createUser(username, password, email) {
   const insert = `
     insert into users(username,password, email)  values($1, $2, $3) RETURNING id
@@ -56,6 +58,8 @@ async function deleteUser(userId) {
   await pool.query(deleteQuery, values);
 }
 
+
+/////// BOOKS //////
 // CRUD operations on a book + books list
 async function createBook({reference, title, author, editor, year, price, description, cover, stock}) {
   const insert = `
@@ -151,7 +155,7 @@ async function showBooks() {
   return response.rows;
 }
 
-// Orders Table Operations
+/////// ORDERS //////
 async function createOrder(userId,status = 'pending') {
   const insert = `
     INSERT INTO orders (user_id,  status, created_at)
@@ -177,6 +181,9 @@ async function findOrderByCustomer(userId) {
   `;
   const values = [userId];
   const response = await pool.query(select, values);
+  if (response.rowCount === 0) {
+    throw new Error("Order not found");
+  }
   return response.rows;
 }
 
@@ -186,6 +193,9 @@ async function findOrderById(orderId) {
   `;
   const values = [orderId];
   const response = await pool.query(select, values);
+  if (response.rowCount === 0) {
+    throw new Error("Order not found");
+  }
   return response.rows[0];
 }
 
@@ -202,7 +212,7 @@ async function updateOrderStatus(orderId, status) {
   return response.rows[0];
 }
 
-// Order Items Table Operations
+/////// ORDER ITEMS //////
 async function addOrderItem(orderId, bookId, quantity, price) {
   const insert = `
     INSERT INTO order_items (order_id, book_id, quantity, price)
@@ -220,6 +230,9 @@ async function getOrderItemsByOrderId(orderId) {
   `;
   const values = [orderId];
   const response = await pool.query(select, values);
+  if (response.rowCount === 0) {
+    throw new Error("Order Item not found");
+  }
   return response.rows;
 }
 
