@@ -1269,6 +1269,7 @@ router.post('/books', async (req, res) => {
      *                   type: string
      */
     router.put('/books/replenish/:reference', async (req, res) => {
+
         const bookRef = parseInt(req.params.reference);
         const { amount } = req.body;
         if (!amount || amount < 1) {
@@ -1425,36 +1426,37 @@ router.post('/books', async (req, res) => {
             res.json({ error: error.message });
         }
     });
-    router.put('/books/stock/:reference', async (req, res) => {
-        const bookRef = parseInt(req.params.reference);
-        try {
-            await consumeBookStock(bookRef);  // Decrement the stock using your function
-            res.status(200).json({ message: "Book stock decremented" });
-        } catch (error) {
-            console.error(error);  // Log any errors on the backend
-            res.status(404).json({ error: error.message });
-        }
-    });
+
+    // router.put('/books/stock/:reference', async (req, res) => {
+    //     const bookRef = parseInt(req.params.reference);
+    //     try {
+    //         await consumeBookStock(bookRef);  // Decrement the stock using your function
+    //         res.status(200).json({ message: "Book stock decremented" });
+    //     } catch (error) {
+    //         console.error(error);  // Log any errors on the backend
+    //         res.status(404).json({ error: error.message });
+    //     }
+    // });
 
 // New API route to increment stock
 // New route to replenish stock
-    router.put('/books/stock/replenish/:reference', async (req, res) => {
-        const bookRef = parseInt(req.params.reference);  // Get the book reference from the URL
-        const { amount } = req.body;  // Amount to replenish (should be 1)
-
-        // Validate the amount to ensure it's positive
-        if (amount !== 1) {
-            return res.status(400).json({ error: 'Invalid amount value. It must be 1.' });
-        }
-
-        try {
-            await replenishBookStock(bookRef, amount); // Replenish the stock by 1 using the replenish function
-
-            res.status(200).json({ message: `Stock replenished successfully by ${amount}` });
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({ error: 'Internal server error while replenishing stock' });
-        }
-    });
+//     router.put('/books/stock/replenish/:reference', async (req, res) => {
+//         const bookRef = parseInt(req.params.reference);  // Get the book reference from the URL
+//         const { amount } = req.body;  // Amount to replenish (should be 1)
+//
+//         // Validate the amount to ensure it's positive
+//         if (amount !== 1) {
+//             return res.status(400).json({ error: 'Invalid amount value. It must be 1.' });
+//         }
+//
+//         try {
+//             await replenishBookStock(bookRef, amount); // Replenish the stock by 1 using the replenish function
+//
+//             res.status(200).json({ message: `Stock replenished successfully by ${amount}` });
+//         } catch (error) {
+//             console.error(error);
+//             res.status(500).json({ error: 'Internal server error while replenishing stock' });
+//         }
+//     });
 
 });
