@@ -78,6 +78,8 @@ function BookDetailsPage() {
         <div className={classes.priceAndEditor}>
           <p><strong>Summary:</strong> {book.description}</p>
           <p><strong>Price:</strong> {book.price} €</p>
+          <p><strong>Author:</strong> {book.author}</p>
+          <p><strong>Publishing date:</strong> {book.year}</p>
           <p><strong>Editor:</strong> {book.editor}</p>
 
           
