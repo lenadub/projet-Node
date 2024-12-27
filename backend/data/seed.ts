@@ -1,14 +1,18 @@
 import { createUser, createBook } from "./queries"
 
+//
+// CREATE USERS AND BOOKS
+// In particular for testing purposes
+//
 
-// To avoid error for  Top-level await expressions
+// To avoid error for Top-level await expressions
 // we wrap this into an async function
 (async () => {
-    // Create some users
+    // Create a number of users
     await createUser("ldubois", "Adc", "lena.dubois@gmail.com");
     await createUser("sfarges", "1234", "sarah.farges@gmail.com");
 
-    // Create some books
+    // Create a number of books
     await  createBook({
         "reference": 1,
         "title": "Pride and Prejudice",
