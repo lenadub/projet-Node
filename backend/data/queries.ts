@@ -9,7 +9,16 @@ import pool from "./connect";
 /////// USERS //////
 // Creates a new user in the database with provided credentials
 // Returns the newly created user's ID
-async function createUser(username, password, email) {
+
+interface User {
+  id: number;
+  username: string;
+  password: string;
+  email: string;
+}
+
+
+async function createUser(username: string, password: string, email: string): Promise<{ id: number }> {
   const insert = `
     insert into users(username,password, email)
     values($1, $2, $3) RETURNING id
@@ -23,7 +32,7 @@ async function createUser(username, password, email) {
 
 // Retrieves user information by user ID
 // Throws error if user is not found
-async function findUser(userId) {
+async function findUser(userId: number): Promise<User> {
   const select = `
     select * from users where id=$1
   `;
@@ -38,7 +47,7 @@ async function findUser(userId) {
 
 // Searches for a user by  username
 // Throws error if user is not found
-async function findUserbyName(userName) {
+async function findUserbyName(userName: string): Promise<User> {
   const select = `
     select * from users where username=$1
   `;
@@ -53,7 +62,7 @@ async function findUserbyName(userName) {
 
 // Updates user's password in the database
 // Throws error if user not found or update fails
-async function updateUserPassword(userId, newPassword) {
+async function updateUserPassword(userId: number, newPassword: string): Promise<void> {
   const updateQuery = `
     update users
     set password = $2
@@ -70,7 +79,7 @@ async function updateUserPassword(userId, newPassword) {
 }
 
 // Removes a user from the database by their ID
-async function deleteUser(userId) {
+async function deleteUser(userId: number): Promise<void> {
   const deleteQuery = `
     delete from users where id=$1
   `;
@@ -82,7 +91,42 @@ async function deleteUser(userId) {
 // Creates a new book entry with all book details
 // Automatically sets creation and update timestamps
 // Returns the book's reference number
-async function createBook({reference, title, author, editor, year, price, description, cover, stock}) {
+
+interface Book {
+  reference: number;
+  title: string;
+  author: string;
+  editor: string;
+  year: number;
+  price: number;
+  description: string;
+  cover: string;
+  stock: number;
+  created_at: Date;
+  updated_at: Date;
+}
+
+async function createBook({
+                            reference,
+                            title,
+                            author,
+                            editor,
+                            year,
+                            price,
+                            description,
+                            cover,
+                            stock,
+                          }: {
+  reference: number;
+  title: string;
+  author: string;
+  editor: string;
+  year: number;
+  price: number;
+  description: string;
+  cover: string;
+  stock: number;
+}): Promise<{ number }> {
   const insert = `
     insert into books(reference, title, author, editor, year, price, description, cover, stock, created_at, updated_at)
     values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10,$11) RETURNING reference
@@ -96,7 +140,7 @@ async function createBook({reference, title, author, editor, year, price, descri
 }
 
 // Retrieves book information by reference number
-async function findBook(bookRef) {
+async function findBook(bookRef: number): Promise<Book> {
   const select = `select * from books where books.reference='${bookRef}'`;
   const response = await pool.query(select);
 
@@ -106,7 +150,7 @@ async function findBook(bookRef) {
 
 // Searches for books by title (case-insensitive partial match)
 // Returns array of matching books
-async function findBookByTitle(bookTitle) {
+async function findBookByTitle(bookTitle: string): Promise<Book[]> {
   const select = `select * from books where LOWER(books.title) like LOWER('%${bookTitle}%')`;
   const response = await pool.query(select);
   // console.log(JSON.stringify(response.rows));
@@ -116,7 +160,7 @@ async function findBookByTitle(bookTitle) {
 }
 
 // Removes a book from database by reference number
-async function deleteBook(bookRef) {
+async function deleteBook(bookRef: number): Promise<void> {
   const deleteQuery = `
     delete from books where reference=$1
   `;
@@ -125,7 +169,7 @@ async function deleteBook(bookRef) {
 }
 
 // Removes books from database matching partial title
-async function deleteBookByTitle(bookTitle) {
+async function deleteBookByTitle(bookTitle: string): Promise<void> {
   const deleteQuery = `
     delete from books where title like $1
   `;
@@ -135,7 +179,27 @@ async function deleteBookByTitle(bookTitle) {
 
 // Updates book information except reference number
 // Updates the 'updated_at' timestamp
-async function updateBook({reference, title, author, editor, year, price, description, cover, stock}) {
+async function updateBook({
+                            reference,
+                            title,
+                            author,
+                            editor,
+                            year,
+                            price,
+                            description,
+                            cover,
+                            stock,
+                          }: {
+  reference: number;
+  title: string;
+  author: string;
+  editor: string;
+  year: number;
+  price: number;
+  description: string;
+  cover: string;
+  stock: number;
+}): Promise<void>{
   const updateQuery = `
     update books
     set title=$2, author=$3, editor=$4, year=$5, price=$6, description=$7, cover=$8, stock=$9, updated_at=$10
@@ -148,7 +212,7 @@ async function updateBook({reference, title, author, editor, year, price, descri
 
 // Decrements book stock by 1 if available
 // Throws error if book is out of stock or not found
-async function consumeBookStock(bookRef) {
+async function consumeBookStock(bookRef: number): Promise<void> {
   const updateQuery = `
     update books
     set stock = stock - 1, updated_at = $2
@@ -163,7 +227,7 @@ async function consumeBookStock(bookRef) {
 }
 
 // Increases book stock by specified amount
-async function replenishBookStock(bookRef, amount) {
+async function replenishBookStock(bookRef: number, amount: number): Promise<void> {
   const updateQuery = `
     update books
     set stock = stock + $2, updated_at = $3
@@ -176,7 +240,7 @@ async function replenishBookStock(bookRef, amount) {
 
 // Retrieves current stock level of a book
 // Throws error if book not found
-async function getBookStock(bookRef) {
+async function getBookStock(bookRef: number): Promise<number> {
   const select = `
     select stock from books where reference = $1
   `;
@@ -190,7 +254,7 @@ async function getBookStock(bookRef) {
 }
 
 // Retrieves all books from database
-async function showBooks() {
+async function showBooks(): Promise<Book[]> {
   const select = `select * from books`;
   const response = await pool.query(select);
 
@@ -201,7 +265,14 @@ async function showBooks() {
 /////// ORDERS //////
 // Creates new order for user with optional status
 // Returns the created order details
-async function createOrder(userId, status = 'pending') {
+interface Order {
+  id: number;
+  user_id: number;
+  status: 'pending' | 'completed' | 'cancelled';
+  created_at: Date;
+}
+
+async function createOrder(userId: number, status: string = 'pending'): Promise<number> {
   const insert = `
     INSERT INTO orders (user_id,  status, created_at)
     VALUES ($1, $2, CURRENT_TIMESTAMP)
@@ -215,7 +286,7 @@ async function createOrder(userId, status = 'pending') {
 }
 
 // Removes an order from database
-async function deleteOrder(orderId) {
+async function deleteOrder(orderId: number): Promise<void> {
   const deleteQuery = `
     DELETE FROM orders WHERE id = $1
   `;
@@ -225,7 +296,7 @@ async function deleteOrder(orderId) {
 
 // Retrieves all orders for a specific user
 // Throws error if no orders found
-async function findOrderByCustomer(userId) {
+async function findOrderByCustomer(userId: number): Promise<Order[]> {
   const select = `
     SELECT * FROM orders WHERE user_id = $1
   `;
@@ -241,7 +312,7 @@ async function findOrderByCustomer(userId) {
 
 // Retrieves specific order by ID
 // Throws error if order not found
-async function findOrderById(orderId) {
+async function findOrderById(orderId: number): Promise<Order> {
   const select = `
     SELECT * FROM orders WHERE id = $1
   `;
@@ -256,7 +327,7 @@ async function findOrderById(orderId) {
 
 // Updates order status and returns updated order
 // Throws error if order not found or update fails
-async function updateOrderStatus(orderId, status) {
+async function updateOrderStatus(orderId: number, status: string): Promise<Order> {
   const update = `
     UPDATE orders SET status = $2 WHERE id = $1
     RETURNING *
@@ -272,7 +343,15 @@ async function updateOrderStatus(orderId, status) {
 /////// ORDER ITEMS //////
 // Adds item to an existing order
 // Returns the created order item details
-async function addOrderItem(orderId, bookId, quantity, price) {
+interface OrderItem {
+  id: number;
+  order_id: number;
+  book_id: number;
+  quantity: number;
+  price: number;
+}
+
+async function addOrderItem(orderId: number, bookId: number, quantity: number, price: number): Promise<OrderItem> {
   const insert = `
     INSERT INTO order_items (order_id, book_id, quantity, price)
     VALUES ($1, $2, $3, $4)
@@ -287,7 +366,7 @@ async function addOrderItem(orderId, bookId, quantity, price) {
 
 // Retrieves all items in a specific order
 // Throws error if no items found
-async function getOrderItemsByOrderId(orderId) {
+async function getOrderItemsByOrderId(orderId: number): Promise<OrderItem[]> {
   const select = `
     SELECT * FROM order_items WHERE order_id = $1
   `;
@@ -302,7 +381,7 @@ async function getOrderItemsByOrderId(orderId) {
 }
 
 // Removes specific item from an order
-async function deleteOrderItem(orderItemId) {
+async function deleteOrderItem(orderItemId: number): Promise<void> {
   const deleteQuery = `
     DELETE FROM order_items WHERE id = $1
   `;
@@ -312,7 +391,7 @@ async function deleteOrderItem(orderItemId) {
 
 // Calculates total price of all items in an order
 // Returns 0 if order has no items
-async function computeOrderTotal(orderId) {
+async function computeOrderTotal(orderId: number): Promise<number> {
   const query = `
     SELECT SUM(quantity * price) AS total_price
     FROM order_items
