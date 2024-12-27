@@ -1,9 +1,9 @@
-import { createUser, createBook } from "./queries"
-
 //
-// CREATE USERS AND BOOKS
+// MODULE TO PREINITIALISE DB WITH USERS AND BOOKS
 // In particular for testing purposes
 //
+import { createUser, createBook } from "./queries"
+
 
 // To avoid error for Top-level await expressions
 // we wrap this into an async function
