@@ -1,8 +1,25 @@
+//
+// MODULE TO HANDLE HTTP ROUTES 
+//
+
+//
+// This code is adapted from and inspired by the following sources:
+// https://www.geeksforgeeks.org/how-to-handle-route-parameters-in-express/
+// https://codetofun.com/express/req-params/
+// https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Server-side/Express_Nodejs/routes
+// https://dev.to/davidamunga/fetching-query-and-route-parameters-in-expressjs-1d92
+// https://dev.to/desmondsanctity/documenting-nodejs-api-using-swagger-4klp
+
+// Import Section
+// Modified import for Jest compatibility and testing environment support
+// Using asterisk import to ensure proper CommonJS module interaction
 // Had to amend the import for the unitary tests to work
 // for more detail, see : https://stackoverflow.com/questions/71055340/getting-undefined-import-of-postgres-in-jest
 // previous import was : import express from 'express';
 import * as express from 'express';
 
+// Database Operations Import 
+// import of all database interaction functions referred to in the routes
 import {
     createUser,
     findUser,
@@ -29,6 +46,8 @@ import {
     createOrder, computeOrderTotal
 } from "./queries";
 
+// Express Router Initialization
+// Creates Express Router object to handle all APIs
 export const router = express.Router();
 
 ////////////////// ROOT ///////////////
@@ -225,7 +244,7 @@ router.get('/books/stock/:reference', async (req, res) => {
     }
 });
 ////////////////// ORDERS ///////////////
-
+// Order Management Section
 /**
  * @swagger
  * /orders:
@@ -544,6 +563,7 @@ router.get('/orders/:id/total', async (req, res) => {
 
 
 ////////////////// ORDER ITEMS ///////////////
+// Order Item Management Section
 /**
  * @swagger
  * /order-items:
@@ -706,6 +726,7 @@ router.delete('/order-items/:id', async (req, res) => {
 
 
 ////////////////// USERS ///////////////
+// User Management Section
 /**
  * @swagger
  * /users:
@@ -993,6 +1014,7 @@ router.put('/users/:id/password', async (req, res) => {
 });
 
 ////////////////// BOOKS  ///////////////
+// Book Management Section
 
 /**
  * @swagger
