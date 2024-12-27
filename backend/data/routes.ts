@@ -1069,6 +1069,177 @@ router.get('/books/search', async (req, res) => {
 
 /**
  * @swagger
+ * /books/consume/{reference}:
+ *   put:
+ *     summary: Decrement the stock of a book
+ *     tags: [Books]
+ *     parameters:
+ *       - in: path
+ *         name: reference
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The reference ID of the book to decrement stock
+ *     responses:
+ *       200:
+ *         description: Book stock decremented successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Book stock decremented
+ *       404:
+ *         description: Book out of stock or not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Book out of stock or not found
+ */
+
+router.put('/books/consume/:reference', async (req, res) => {
+    const bookRef = parseInt(req.params.reference);
+    try {
+        await consumeBookStock(bookRef);
+        res.status(200);
+        res.json({ message: "Book stock decremented" });
+    } catch (error) {
+        res.status(404);
+        res.json({ error: error.message });
+    }
+});
+
+/**
+ * @swagger
+ * /books/replenish/{reference}:
+ *   put:
+ *     summary: Replenish the stock of a book
+ *     tags: [Books]
+ *     parameters:
+ *       - in: path
+ *         name: reference
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The reference ID of the book to replenish stock
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               amount:
+ *                 type: integer
+ *                 description: The amount to replenish the stock
+ *             required:
+ *               - amount
+ *     responses:
+ *       200:
+ *         description: Book stock replenished successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Book stock replenished
+ *       400:
+ *         description: Invalid amount to replenish
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Invalid amount to replenish
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ */
+router.put('/books/replenish/:reference', async (req, res) => {
+
+    const bookRef = parseInt(req.params.reference);
+    const { amount } = req.body;
+    if (!amount || amount < 1) {
+        res.status(400);
+        res.json({ error: "Invalid amount to replenish" });
+        return;
+    }
+    try {
+        await replenishBookStock(bookRef, amount);
+        res.status(200);
+        res.json({ message: "Book stock replenished" });
+    } catch (error) {
+        res.status(500);
+        res.json({ error: error.message });
+    }
+});
+
+/**
+ * @swagger
+ * /books/stock/{reference}:
+ *   get:
+ *     summary: Get the stock of a specific book
+ *     tags: [Books]
+ *     parameters:
+ *       - in: path
+ *         name: reference
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The reference ID of the book to retrieve the stock for
+ *     responses:
+ *       200:
+ *         description: Stock retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 stock:
+ *                   type: integer
+ *                   description: The available stock of the book
+ *       404:
+ *         description: Book not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Book not found
+ */
+router.get('/books/stock/:reference', async (req, res) => {
+    const bookRef = parseInt(req.params.reference);
+    try {
+        const stock = await getBookStock(bookRef);
+        res.status(200);
+        res.json({ stock });
+    } catch (error) {
+        res.status(404);
+        res.json({ error: error.message });
+    }
+});
+
+
+/**
+ * @swagger
  * /books:
  *   post:
  *     summary: Create a new book
@@ -1164,175 +1335,6 @@ router.post('/books', async (req, res) => {
         res.json({ error: 'Error creating book' });
     }
 
-    /**
-     * @swagger
-     * /books/consume/{reference}:
-     *   put:
-     *     summary: Decrement the stock of a book
-     *     tags: [Books]
-     *     parameters:
-     *       - in: path
-     *         name: reference
-     *         required: true
-     *         schema:
-     *           type: integer
-     *         description: The reference ID of the book to decrement stock
-     *     responses:
-     *       200:
-     *         description: Book stock decremented successfully
-     *         content:
-     *           application/json:
-     *             schema:
-     *               type: object
-     *               properties:
-     *                 message:
-     *                   type: string
-     *                   example: Book stock decremented
-     *       404:
-     *         description: Book out of stock or not found
-     *         content:
-     *           application/json:
-     *             schema:
-     *               type: object
-     *               properties:
-     *                 error:
-     *                   type: string
-     *                   example: Book out of stock or not found
-     */
-
-    router.put('/books/consume/:reference', async (req, res) => {
-        const bookRef = parseInt(req.params.reference);
-        try {
-            await consumeBookStock(bookRef);
-            res.status(200);
-            res.json({ message: "Book stock decremented" });
-        } catch (error) {
-            res.status(404);
-            res.json({ error: error.message });
-        }
-    });
-
-    /**
-     * @swagger
-     * /books/replenish/{reference}:
-     *   put:
-     *     summary: Replenish the stock of a book
-     *     tags: [Books]
-     *     parameters:
-     *       - in: path
-     *         name: reference
-     *         required: true
-     *         schema:
-     *           type: integer
-     *         description: The reference ID of the book to replenish stock
-     *     requestBody:
-     *       required: true
-     *       content:
-     *         application/json:
-     *           schema:
-     *             type: object
-     *             properties:
-     *               amount:
-     *                 type: integer
-     *                 description: The amount to replenish the stock
-     *             required:
-     *               - amount
-     *     responses:
-     *       200:
-     *         description: Book stock replenished successfully
-     *         content:
-     *           application/json:
-     *             schema:
-     *               type: object
-     *               properties:
-     *                 message:
-     *                   type: string
-     *                   example: Book stock replenished
-     *       400:
-     *         description: Invalid amount to replenish
-     *         content:
-     *           application/json:
-     *             schema:
-     *               type: object
-     *               properties:
-     *                 error:
-     *                   type: string
-     *                   example: Invalid amount to replenish
-     *       500:
-     *         description: Internal server error
-     *         content:
-     *           application/json:
-     *             schema:
-     *               type: object
-     *               properties:
-     *                 error:
-     *                   type: string
-     */
-    router.put('/books/replenish/:reference', async (req, res) => {
-
-        const bookRef = parseInt(req.params.reference);
-        const { amount } = req.body;
-        if (!amount || amount < 1) {
-            res.status(400);
-            res.json({ error: "Invalid amount to replenish" });
-            return;
-        }
-        try {
-            await replenishBookStock(bookRef, amount);
-            res.status(200);
-            res.json({ message: "Book stock replenished" });
-        } catch (error) {
-            res.status(500);
-            res.json({ error: error.message });
-        }
-    });
-
-    /**
-     * @swagger
-     * /books/stock/{reference}:
-     *   get:
-     *     summary: Get the stock of a specific book
-     *     tags: [Books]
-     *     parameters:
-     *       - in: path
-     *         name: reference
-     *         required: true
-     *         schema:
-     *           type: integer
-     *         description: The reference ID of the book to retrieve the stock for
-     *     responses:
-     *       200:
-     *         description: Stock retrieved successfully
-     *         content:
-     *           application/json:
-     *             schema:
-     *               type: object
-     *               properties:
-     *                 stock:
-     *                   type: integer
-     *                   description: The available stock of the book
-     *       404:
-     *         description: Book not found
-     *         content:
-     *           application/json:
-     *             schema:
-     *               type: object
-     *               properties:
-     *                 error:
-     *                   type: string
-     *                   example: Book not found
-     */
-    router.get('/books/stock/:reference', async (req, res) => {
-        const bookRef = parseInt(req.params.reference);
-        try {
-            const stock = await getBookStock(bookRef);
-            res.status(200);
-            res.json({ stock });
-        } catch (error) {
-            res.status(404);
-            res.json({ error: error.message });
-        }
-    });
 
 
     /**
