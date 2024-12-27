@@ -1,8 +1,10 @@
+//
+// MODULE TO CREATE TABLES IN DATABASE
+//
+
+
 import pool from "./connect"
 
-//
-// CREATE TABLES IN DATABASE
-//
 
 // create table 'users'
 const createUsers = `
