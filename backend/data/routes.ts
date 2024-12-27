@@ -1,3 +1,7 @@
+//
+// MODULE TO HANDLE HTTP ROUTES 
+//
+
 // Import Section
 // Modified import for Jest compatibility and testing environment support
 // Using asterisk import to ensure proper CommonJS module interaction
