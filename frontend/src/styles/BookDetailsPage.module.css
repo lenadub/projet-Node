@@ -98,3 +98,18 @@
 .addToCartButton:hover {
   background-color: #a5d6db;
 }
+
+.addToCartButton.outOfStock {
+  background-color: #ff4d4d; 
+}
+
+.outOfStockMessage {
+  color: #ff4d4d; 
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.cartMessage {
+  color: #62cfc1;
+  margin-top: 10px;
+}

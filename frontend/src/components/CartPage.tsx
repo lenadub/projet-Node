@@ -26,13 +26,34 @@ function CartPage() {
     setOrderPlaced(true); // Set orderPlaced to true when order is confirmed
   };
 
-  const handleRemoveItem = (index: number) => {
-    // Remove item from the cart
+  const handleRemoveItem = async (index: number) => {
+    const bookToRemove = cart[index];
+  
+    // Remove the item from the cart state
     const updatedCart = cart.filter((_, i) => i !== index);
     setCart(updatedCart);
-    // Update local storage with the new cart
     localStorage.setItem("cart", JSON.stringify(updatedCart));
+  
+    // Replenish stock by 1 using the new backend route
+    try {
+      const response = await fetch(`http://localhost:3000/books/stock/replenish/${bookToRemove.reference}`, {
+        method: 'PUT', // PUT request to replenish stock
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ amount: 1 }), // Send amount 1 to replenish the stock
+      });
+  
+      if (!response.ok) {
+        throw new Error('Error replenishing stock. Please try again.');
+      }
+  
+    } catch (error) {
+      console.error(error);
+      alert(error.message);
+    }
   };
+  
 
   const calculateTotalPrice = () => {
     return cart.reduce((total, book) => total + book.price, 0);
