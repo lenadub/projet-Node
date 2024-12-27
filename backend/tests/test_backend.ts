@@ -2,6 +2,14 @@
 // UNITARY TESTS MODULE
 //
 
+//
+// This code is adapted from and inspired by the following sources:
+// -  https://www.testim.io/blog/supertest-how-to-test-apis-like-a-pro/
+// -  https://dev.to/franciscomendes10866/testing-express-api-with-jest-and-supertest-3gf
+// -  https://mvryo.blogspot.com/2024/10/api-testing-with-jest-and-supertest.html
+// -  https://github.com/achmadprayoogo/example-supertest-api-test-node-js
+//
+
 // Import the SuperTest library for HTTP testing
 // The * import syntax used for compatibility with both ESM and CommonJS modules. 
 // Here required for testing
