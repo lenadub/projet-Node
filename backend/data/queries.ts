@@ -1,3 +1,8 @@
+//
+// MODULE TO HANDLE DATABSE QUERIES
+//
+
+
 // import psql pool
 import pool from "./connect";
 
