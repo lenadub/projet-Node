@@ -9,7 +9,7 @@ function SearchBar({onSearch}) {
     const url = `http://localhost:3000/books/search?title=${searchTerm}`
 
     fetch(url, {
-      method: 'POST'
+      method: 'GET'
     })
     .then(response => {
       if (!response.ok) {

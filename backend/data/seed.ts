@@ -10,6 +10,7 @@ import { createUser, createBook } from "./queries"
 
     // Create some books
     await  createBook({
+        "reference": 1,
         "title": "Pride and Prejudice",
         "author": "Jane Austen",
         "editor": "penguin classics",
@@ -21,6 +22,7 @@ import { createUser, createBook } from "./queries"
       })
     
       await  createBook({
+        "reference": 2,
         "title": "The Phantom of the Opera",
         "author": "Gaston Leroux",
         "editor": "livre de poche",
@@ -32,6 +34,7 @@ import { createUser, createBook } from "./queries"
       })
     
       await  createBook({
+          "reference": 3,
           "title": "The great Gatsby",
           "author": "F. Scott Fitzgerald",
           "editor": "penguin classics",
@@ -43,6 +46,7 @@ import { createUser, createBook } from "./queries"
       })
     
     await  createBook({
+        "reference": 4,
         "title": "react key concepts",
         "author": "Maximilian Schwarzmüller",
         "editor": "packt",
@@ -54,6 +58,7 @@ import { createUser, createBook } from "./queries"
     })
     
     await  createBook({
+        "reference": 5,
         "title": "the road to react",
         "author": "Robin Wieruch",
         "editor": "leanpub",
@@ -65,6 +70,7 @@ import { createUser, createBook } from "./queries"
     })
     
     await  createBook({
+        "reference": 6,
         "title": "eloquent javascript",
         "author": "Marijn Haverbeke",
         "editor": "no starch press",
@@ -76,6 +82,7 @@ import { createUser, createBook } from "./queries"
     })
     
     await  createBook({
+        "reference": 7,
         "title": "ES6 for humans",
         "author": "Deepak Grober",
         "editor": "apress",
@@ -87,6 +94,7 @@ import { createUser, createBook } from "./queries"
     })
     
     await  createBook({
+        "reference": 8,
         "title": "The witcher the last wish",
         "author": "Andrzej Sapkowski",
         "editor": "bragelonne",
@@ -98,6 +106,7 @@ import { createUser, createBook } from "./queries"
     })
     
     await  createBook({
+        "reference": 9,
         "title": "Six of crows",
         "author": "Leigh Bardugo",
         "editor": "bragelonne",
@@ -109,6 +118,7 @@ import { createUser, createBook } from "./queries"
     })
     
     await  createBook({
+        "reference": 10,
         "title": "The book thief",
         "author": "Markus Zusak",
         "editor": "penguin classics",
@@ -120,6 +130,7 @@ import { createUser, createBook } from "./queries"
     })
     
     await  createBook({
+        "reference": 11,
         "title": "The princess bride",
         "author": "William Goldman",
         "editor": "bragelonne",
@@ -131,6 +142,7 @@ import { createUser, createBook } from "./queries"
     })
 
     await  createBook({
+        "reference": 12,
         "title": "Mastering Typescript",
         "author": "Nathan Rozentals",
         "editor": "Packt",

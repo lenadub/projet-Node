@@ -1,38 +1,37 @@
-import { useParams, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-import classes from "../styles/BookDetailsPage.module.css";
+import { useParams, useNavigate } from "react-router-dom"
+import { useState, useEffect } from "react"
+import classes from "../styles/BookDetailsPage.module.css"
 
 function BookDetailsPage() {
-  const { id } = useParams(); // Get the book ID from the URL
-  const [book, setBook] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [cartStatus, setCartStatus] = useState(false);
+  const { reference } = useParams() // Get the book ID from the URL
+  const [book, setBook] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-  const navigate = useNavigate(); // Initialize the navigate function
+  const navigate = useNavigate() // Initialize the navigate function
 
   const goBack = () => {
-    navigate(-1); // Go back to the previous page
-  };
+    navigate(-1) // Go back to the previous page
+  }
 
   useEffect(() => {
     const fetchBookDetails = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/books/${id}`);
+        const response = await fetch(`http://localhost:3000/books/reference/${reference}`)
         if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+          throw new Error(`HTTP error! Status: ${response.status}`)
         }
-        const data = await response.json();
-        setBook(data);
+        const data = await response.json()
+        setBook(data)
       } catch (error) {
-        setError(error.message);
+        setError(error.message)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
     fetchBookDetails();
-  }, [id]);
+  }, [reference])
 
   const handleAddToCart = () => {
     if (book.stock <= 0) {
@@ -54,9 +53,9 @@ function BookDetailsPage() {
     // Save the updated cart to local storage
     localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
+  
+  if (loading) return <p>Loading...</p>
+  if (error) return <p>Error: {error}</p>
 
   return (
     <div className={classes.bookDetails}>
@@ -78,11 +77,8 @@ function BookDetailsPage() {
           <p><strong>Summary:</strong> {book.description}</p>
           <p><strong>Price:</strong> {book.price} €</p>
           <p><strong>Editor:</strong> {book.editor}</p>
-          <p><strong>Author:</strong> {book.author}</p>
-          <p><strong>Publishing date:</strong> {book.year}</p>
-          <p><strong>Stock:</strong> {book.stock > 0 ? book.stock : "Out of Stock"}</p>
 
-          {/* Add to Cart Button */}
+          
           <button
             className={`${classes.addToCartButton} ${cartStatus ? classes.added : ""}`}
             disabled={book.stock <= 0 || cartStatus}
@@ -102,8 +98,7 @@ function BookDetailsPage() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default BookDetailsPage;
-
+export default BookDetailsPage

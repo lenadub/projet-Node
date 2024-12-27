@@ -6,43 +6,50 @@ The project contains a frontend app (React.js) and a backend API server (node.js
 
 ### How to get started
 
-#### Create a postgresql user and database
+#### Start the Backend
 
-```bash
-> sudo -u postgres psql
-#  create user demo with password 'demo';
-#  create database demo owner demo;
-# \q
-```
-
-#### Create the database schema (tables)
-
-```bash
-> cd backend 
-> npm run schema
-```
-
-#### Seed the database with some data (users, books...)
-
+To initialize the backend environment and subsequently run the backend if required, please run the command below using the Microsoft Windows  command terminal :
 ```bash
 > cd backend
-> npm run seed
+> call install.bat
 ```
 
-#### Start the backend API server
+Note this script  above runs only on Microsoft Windows.
+The script will:
+- Install npm dependencies
+- Request the Postgres admin password
+- Drop the Postgress database demo if it exists
+- Drop the database user demo if it exists
+- Create database user demo
+- Creating database demo
+- Load database schema
+- Seed the database
+- Launch the backend if needed
 
+If the script above cannot be run (e.g . the platform is not Windows), you can manually perform the initialization using the following commands  instead:
 ```bash
-> cd backend
-
-> npm run dev
-
-# Check API server is running on port 3000
-> curl localhost:3000
-  {"status": 200, "message": "API server OK"}
-# Type CONTROL C to stop the server
+cd backend
+npm install
+psql -U postgres -c "DROP DATABASE IF EXISTS demo;"
+psql -U postgres -c "DROP ROLE IF EXISTS demo;"
+psql -U postgres -c "CREATE USER demo WITH PASSWORD 'demo';"
+psql -U postgres -c "CREATE DATABASE demo OWNER demo;"
+tsx data/schema.ts
+tsx data/seed.ts
 ```
 
-#### Start the frontend
+To simply launch the backend after **the initialization above is complete**,
+please go to the directory where the backend index.js is stored
+and then run :
+```bash
+cd backend
+tsx index.js
+```
+
+By default, the backend listens on port 3000
+
+
+#### Start the Frontend
 
 ```bash
 > cd frontend
