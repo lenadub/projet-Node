@@ -3,10 +3,11 @@ import { useState, useEffect } from "react"
 import classes from "../styles/BookDetailsPage.module.css"
 
 function BookDetailsPage() {
-  const { reference } = useParams() // Get the book ID from the URL
+  const { reference } = useParams() 
   const [book, setBook] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [cartStatus, setCartStatus] = useState(false);
 
   const navigate = useNavigate() // Initialize the navigate function
 
@@ -45,7 +46,8 @@ function BookDetailsPage() {
     }, 5000);
 
     // Get the current cart from local storage
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const savedCart = localStorage.getItem("cart");
+    const cart = savedCart ? JSON.parse(savedCart) : [];
 
     // Add the book to the cart
     const updatedCart = [...cart, book];
@@ -53,7 +55,7 @@ function BookDetailsPage() {
     // Save the updated cart to local storage
     localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
-  
+
   if (loading) return <p>Loading...</p>
   if (error) return <p>Error: {error}</p>
 
