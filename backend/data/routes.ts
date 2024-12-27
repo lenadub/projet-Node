@@ -1,8 +1,13 @@
+// Import Section
+// Modified import for Jest compatibility and testing environment support
+// Using asterisk import to ensure proper CommonJS module interaction
 // Had to amend the import for the unitary tests to work
 // for more detail, see : https://stackoverflow.com/questions/71055340/getting-undefined-import-of-postgres-in-jest
 // previous import was : import express from 'express';
 import * as express from 'express';
 
+// Database Operations Import 
+// import of all database interaction functions referred to in the routes
 import {
     createUser,
     findUser,
@@ -29,6 +34,8 @@ import {
     createOrder, computeOrderTotal
 } from "./queries";
 
+// Express Router Initialization
+// Creates Express Router object to handle all APIs
 export const router = express.Router();
 
 ////////////////// ROOT ///////////////
@@ -225,7 +232,7 @@ router.get('/books/stock/:reference', async (req, res) => {
     }
 });
 ////////////////// ORDERS ///////////////
-
+// Order Management Section
 /**
  * @swagger
  * /orders:
@@ -544,6 +551,7 @@ router.get('/orders/:id/total', async (req, res) => {
 
 
 ////////////////// ORDER ITEMS ///////////////
+// Order Item Management Section
 /**
  * @swagger
  * /order-items:
@@ -706,6 +714,7 @@ router.delete('/order-items/:id', async (req, res) => {
 
 
 ////////////////// USERS ///////////////
+// User Management Section
 /**
  * @swagger
  * /users:
@@ -993,6 +1002,7 @@ router.put('/users/:id/password', async (req, res) => {
 });
 
 ////////////////// BOOKS  ///////////////
+// Book Management Section
 
 /**
  * @swagger
