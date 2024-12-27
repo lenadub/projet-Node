@@ -26,12 +26,24 @@ The script will:
 - Seed the database
 - Launch the backend if needed
 
-To simply launch the backend after **initialization is complete**,
+If the script above cannot be run (e.g . the platform is not Windows), you can manually perform the initialization using the following commands  instead:
+```bash
+cd backend
+npm install
+psql -U postgres -c "DROP DATABASE IF EXISTS demo;"
+psql -U postgres -c "DROP ROLE IF EXISTS demo;"
+psql -U postgres -c "CREATE USER demo WITH PASSWORD 'demo';"
+psql -U postgres -c "CREATE DATABASE demo OWNER demo;"
+tsx data/schema.ts
+tsx data/seed.ts
+```
+
+To simply launch the backend after **the initialization above is complete**,
 please go to the directory where the backend index.js is stored
 and then run :
 ```bash
-> cd backend
-> tsx index.js
+cd backend
+tsx index.js
 ```
 
 By default, the backend listens on port 3000
