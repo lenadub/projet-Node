@@ -1,5 +1,9 @@
 import pool from "./connect"
 
+//
+// CREATE TABLES IN DATABASE
+//
+
 // create table 'users'
 const createUsers = `
     create table if not exists users(
@@ -26,13 +30,9 @@ const createBooks = `
                                         updated_at TIMESTAMP
     )
 `;
-// create table shopping 'carts'
-// normally one per user, if users are managed by the app, or only 1 cart if no users
-const createCarts = `
-  // to be defined
-`;
 
-// // create table book 'orders'
+
+// create table book 'orders'
 const createOrders = `
   CREATE TABLE IF NOT EXISTS orders (
     id SERIAL PRIMARY KEY,
@@ -53,12 +53,18 @@ const createOrderItems = `
 )
 `;
 
+// create table shopping 'carts'
+// normally one per user, if users are managed by the app, or only 1 cart if no users
+//const createCarts = `
+//  // to be defined
+//`;
+
 // // create table  PDF 'invoices'
 // const createInvoices = `
 //   // to be defined
 // `;
 
-// To avoid error for  Top-level await expressions
+// To avoid error for Top-level await expressions
 // we wrap this into an async function
 (async () => {
     await pool.query(createUsers);
