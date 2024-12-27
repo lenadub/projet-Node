@@ -20,11 +20,51 @@ function CartPage() {
     setCart(cartItems);
   }, []);
 
-  const handlePlaceOrder = () => {
-    // Clear the cart from local storage
-    localStorage.removeItem("cart");
-    setCart([]);
-    setOrderPlaced(true); // Set orderPlaced to true when order is confirmed
+  const handlePlaceOrder = async () => {
+    try {
+      // Create an order
+      const orderResponse = await fetch("http://localhost:3000/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: 1, // Replace with actual userId from authentication context or state
+          status: "completed",
+        }),
+      });
+
+      if (!orderResponse.ok) {
+        throw new Error("Failed to create order. Please try again.");
+      }
+
+      const orderData = await orderResponse.json();
+      const orderId = orderData.id;
+
+      // Create order items for each item in the cart
+      for (const book of cart) {
+        await fetch("http://localhost:3000/order-items", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            orderId,
+            bookId: book.reference,
+            quantity: 1, // Assuming quantity is always 1 per item in the cart
+            price: book.price,
+          }),
+        });
+      }
+
+      // Clear the cart from local storage and update the state
+      localStorage.removeItem("cart");
+      setCart([]);
+      setOrderPlaced(true);
+    } catch (error) {
+      console.error(error);
+      alert(error.message);
+    }
   };
 
   const handleRemoveItem = async (index: number) => {
