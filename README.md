@@ -45,7 +45,7 @@ please go to the directory where the backend index.js is stored
 and then run :
 ```bash
 cd backend
-tsx index.js
+tsx index.ts
 ```
 
 By default, the backend listens on port 3000.
