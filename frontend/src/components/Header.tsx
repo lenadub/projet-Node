@@ -14,7 +14,7 @@ import { useState, useEffect } from "react";
 // Importing CSS module for styling the Header component
 import classes from '../styles/Header.module.css';
 
-// Defining the Header functional component
+// Defining the Header behavior
 function Header() {
   // State to hold the username, initialized to null
   const [username, setUsername] = useState<string | null>(null);
