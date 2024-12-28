@@ -94,11 +94,14 @@ function CartPage() {
       alert(error.message);
     }
   };
-  
+
 
   const calculateTotalPrice = () => {
-    return cart.reduce((total, book) => total + book.price, 0);
+    return parseFloat(
+        cart.reduce((total, book) => total + book.price, 0).toFixed(2)
+    );
   };
+
 
   return (
     <div className={classes.cart}>
