@@ -12,8 +12,8 @@ The project contains a frontend app (React.js) and a backend API server (node.js
 
 To initialize the backend environment and subsequently run the backend if required, please run the command below using the Microsoft Windows  command terminal :
 ```bash
-> cd backend
-> call install.bat
+cd backend
+call install.bat
 ```
 
 Note this script  above runs only on Microsoft Windows.
@@ -49,6 +49,7 @@ tsx index.js
 ```
 
 By default, the backend listens on port 3000.
+Swagger is at : http://localhost:3000/api-docs
 
 Note this backend was tested on Windows 11 and with :
 * npm :  version 10.9.0
