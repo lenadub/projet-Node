@@ -1,6 +1,25 @@
+/*.header {*/
+/*  background-color: rgb(176, 140, 209);*/
+/*  height: 40px;*/
+/*  line-height: 40px;*/
+/*  width: 100%;*/
+/*}*/
 .header {
   background-color: rgb(176, 140, 209);
   height: 40px;
   line-height: 40px;
   width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
 }
+
+.username {
+  position: absolute;
+  right: 20px;
+  font-weight: bold;
+  color: black; /* Adjust as per your theme */
+}
+
+

@@ -9,6 +9,7 @@ import { createUser, createBook } from "./queries"
 // we wrap this into an async function
 (async () => {
     // Create a number of users
+    await createUser("jdoe", "Adc", "john.does@gmail.com");
     await createUser("ldubois", "Adc", "lena.dubois@gmail.com");
     await createUser("sfarges", "1234", "sarah.farges@gmail.com");
 

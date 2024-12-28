@@ -1,14 +1,17 @@
-import express from "express"
-import { findBook, findBookByTitle, showBooks, createBook } from "./data/queries"
+import express, { Application } from "express";
+import { Server } from "http";
 import {router} from "./data/routes"
 import cors from "cors";
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
+import { Options } from 'swagger-jsdoc';
+import { OpenAPIV3 } from "openapi-types";
+import { CorsOptions } from 'cors';
 
-let app = express();
-const PORT = 3000
+const app: Application = express();
+const PORT:number = 3000
 
-const corsOptions = {
+const corsOptions:CorsOptions = {
   origin: '*', // Permet toutes les origines
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Méthodes HTTP autorisées
   allowedHeaders: ['Content-Type', 'Authorization'], // En-têtes autorisés
@@ -24,7 +27,7 @@ app.use(express.json());
 app.use('/', router);
 
 // Swagger configuration
-const swaggerOptions = {
+const swaggerOptions: Options = {
   definition: {
     openapi: '3.0.0',
     info: {
@@ -36,18 +39,18 @@ const swaggerOptions = {
   apis: ['./data/routes.ts'], // Path to the file with Swagger annotations
 };
 
-const swaggerSpec = swaggerJSDoc(swaggerOptions);
+const swaggerSpec: OpenAPIV3.Document = swaggerJSDoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 //Prevent CORS errors
-app.use(function(req, res, next) {
+app.use(function (req: express.Request, res: express.Response, next: express.NextFunction): void {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Access-Control-Allow-Origin")
   next();
 })
 
 //Start API server
-let server = app.listen(PORT, () => {
+const server:Server = app.listen(PORT, () :void => {
   console.log(`\nAPI server is started on port ${PORT}`)
   console.log(`  to connect, point your browser to http://localhost:${PORT}`)
   console.log("  to stop server, type CONTROL C")
@@ -55,9 +58,9 @@ let server = app.listen(PORT, () => {
 
 
 // Gracefull server shutdown
-function shutdown() {
+function shutdown() :void {
   console.log(" shutting down API server")
-  server.close( () => {
+  server.close( () :void => {
     console.log("API server is closed.")
     process.exit(0)
   })
