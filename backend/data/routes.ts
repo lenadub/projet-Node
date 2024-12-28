@@ -43,7 +43,10 @@ import {
     findOrderById,
     findOrderByCustomer,
     deleteOrder,
-    createOrder, computeOrderTotal
+    createOrder, computeOrderTotal,
+    Order, OrderResponse, OrderItem,
+    Book, User
+
 } from "./queries";
 
 // Express Router Initialization
@@ -111,7 +114,7 @@ router.get('/', async (req: express.Request, res: express.Response): Promise<voi
  */
 
 router.put('/books/consume/:reference', async (req: express.Request, res: express.Response): Promise<void> => {
-    const bookRef = parseInt(req.params.reference);
+    const bookRef:number = parseInt(req.params.reference);
     try {
         await consumeBookStock(bookRef);
         res.status(200);
@@ -180,7 +183,7 @@ router.put('/books/consume/:reference', async (req: express.Request, res: expres
  */
 router.put('/books/replenish/:reference', async (req: express.Request, res: express.Response): Promise<void> => {
 
-    const bookRef = parseInt(req.params.reference);
+    const bookRef:number = parseInt(req.params.reference);
     const { amount } = req.body;
     if (!amount || amount < 1) {
         res.status(400);
@@ -233,7 +236,7 @@ router.put('/books/replenish/:reference', async (req: express.Request, res: expr
  *                   example: Book not found
  */
 router.get('/books/stock/:reference', async (req: express.Request, res: express.Response): Promise<void> => {
-    const bookRef = parseInt(req.params.reference);
+    const bookRef:number = parseInt(req.params.reference);
     try {
         const stock = await getBookStock(bookRef);
         res.status(200);
@@ -243,6 +246,10 @@ router.get('/books/stock/:reference', async (req: express.Request, res: express.
         res.json({ error: error.message });
     }
 });
+
+
+
+
 ////////////////// ORDERS ///////////////
 // Order Management Section
 /**
@@ -264,6 +271,11 @@ router.get('/books/stock/:reference', async (req: express.Request, res: express.
  *               status:
  *                 type: string
  *                 description: The status of the order (default is 'pending')
+ *                 maxLength: 10
+ *                 enum:
+ *                   - pending
+ *                   - completed
+ *                   - cancelled
  *             required:
  *               - userId
  *     responses:
@@ -274,29 +286,55 @@ router.get('/books/stock/:reference', async (req: express.Request, res: express.
  *             schema:
  *               type: object
  *               properties:
- *                 id:
+ *                 orderId:
  *                   type: integer
- *                 user_id:
- *                   type: integer
- *                 status:
+ *       400:
+ *         description: Bad Request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
  *                   type: string
- *                 created_at:
- *                   type: string
- *                   format: date-time
+ *                   description: Error message explaining why the request failed
+ *                   example: User does not exist. or Invalid status. Must be one of pending, completed or cancelled
  *       500:
- *        description: Cannot create Order
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Generic error message for unexpected server errors
+ *                   example: "An unexpected error occurred. Please try again later."
  */
+
 router.post('/orders', async (req: express.Request, res: express.Response): Promise<void> => {
-    const { userId,  status } = req.body;
+    const { userId, status } = req.body;
+    const validStatuses:string[] = ['pending', 'completed', 'cancelled'];
+
+    if (!validStatuses.includes(status)) {
+        res.status(400).json({ error: `Invalid status. Must be one of: ${validStatuses.join(', ')}` });
+        return;
+    }
+
     try {
-        const order = await createOrder(userId, status);
-        res.status(201);
-        res.json(order);
+        const orderResponse:OrderResponse = await createOrder(userId, status);
+        res.status(201).json(orderResponse);
     } catch (error) {
-        res.status(500);
-        res.json({ error: error.message });
+        if (error.message.includes('orders_user_id_fkey')) {
+            res.status(400).json({ error: 'User does not exist.' });
+        } else {
+            console.error('Error creating order:', error);
+            res.status(500).json({ error: 'An unexpected error occurred. Please try again later.' });
+        }
     }
 });
+
+
 
 /**
  * @swagger
@@ -322,11 +360,26 @@ router.post('/orders', async (req: express.Request, res: express.Response): Prom
  *                 message:
  *                   type: string
  *                   example: Order deleted successfully
+ *       404:
+ *         description: Order not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Order not found
  *       500:
  *         description: Cannot delete Order
  */
 router.delete('/orders/:id', async (req: express.Request, res: express.Response): Promise<void> => {
-    const orderId = parseInt(req.params.id);
+    const orderId:number = parseInt(req.params.id);
+    try {
+        const order:Order = await findOrderById(orderId);
+    } catch (error) {
+        res.status(404).json({ error: error.message });
+    }
     try {
         await deleteOrder(orderId);
         res.status(200);
@@ -487,6 +540,16 @@ router.get('/orders/:id', async (req: express.Request, res: express.Response): P
  *                 created_at:
  *                   type: string
  *                   format: date-time
+ *       400:
+ *         description: Incorrect status value. Should be pending, completed or cancelled
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Error message explaining why the request failed
  *       404:
  *         description: Order not found or update failed
  *         content:
@@ -496,11 +559,17 @@ router.get('/orders/:id', async (req: express.Request, res: express.Response): P
  *               properties:
  *                 error:
  *                   type: string
- *                   example: Order not found or update failed
+ *                   example: Invalid status. Must be one of pending, completed or cancelled
  */
 router.put('/orders/:id/status', async (req: express.Request, res: express.Response): Promise<void> => {
     const orderId = parseInt(req.params.id);
     const { status } = req.body;
+    const validStatuses = ['pending', 'completed', 'cancelled'];
+
+    if (!validStatuses.includes(status)) {
+        res.status(400).json({ error: `Invalid status. Must be one of: ${validStatuses.join(', ')}` });
+        return;
+    }
     try {
         const order = await updateOrderStatus(orderId, status);
         res.status(200).json(order);
@@ -536,8 +605,8 @@ router.put('/orders/:id/status', async (req: express.Request, res: express.Respo
  *                 total:
  *                   type: number
  *                   description: The total cost of the order
- *       404:
- *         description: Unable to compute order total
+ *       400:
+ *         description: Invalid orderId format
  *         content:
  *           application/json:
  *             schema:
@@ -545,16 +614,31 @@ router.put('/orders/:id/status', async (req: express.Request, res: express.Respo
  *               properties:
  *                 error:
  *                   type: string
- *                   example: Unable to compute order total
+ *                   example: Invalid order ID
+ *       404:
+ *         description: Unable to compute order total or Order not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Unable to compute order total or Order not found
  */
 router.get('/orders/:id/total', async (req: express.Request, res: express.Response): Promise<void> => {
-    const orderId = parseInt(req.params.id);
+    const orderId:number = parseInt(req.params.id);
     if (isNaN(orderId)) {
         return res.status(400).json({ error: 'Invalid order ID' });
     }
+    try {
+        const order:Order = await findOrderById(orderId);
+    } catch (error) {
+        res.status(404).json({ error: error.message });
+    }
 
     try {
-        const total = await computeOrderTotal(orderId);
+        const total:number = await computeOrderTotal(orderId);
         res.status(200).json({ orderId, total });
     } catch (error) {
         res.status(404).json({ error: error.message });
@@ -612,13 +696,30 @@ router.get('/orders/:id/total', async (req: express.Request, res: express.Respon
  *                   type: integer
  *                 price:
  *                   type: number
+ *       404:
+ *         description: Order not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Order not found
  *       500:
  *          description: Cannot create Order Item
  */
+
 router.post('/order-items', async (req: express.Request, res: express.Response): Promise<void> => {
     const { orderId, bookId, quantity, price } = req.body;
+
     try {
-        const orderItem = await addOrderItem(orderId, bookId, quantity, price);
+        const order:Order = await findOrderById(orderId);
+    } catch (error) {
+        res.status(404).json({ error: error.message });
+    }
+    try {
+        const orderItem:OrderItem = await addOrderItem(orderId, bookId, quantity, price);
         res.status(201);
         res.json(orderItem);
     } catch (error) {
@@ -708,12 +809,29 @@ router.get('/order-items/order/:orderId', async (req: express.Request, res: expr
  *                 message:
  *                   type: string
  *                   example: Order item deleted successfully
+ *       404:
+ *         description: Order Item not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Order Item not found
  *       500:
  *          description: Cannot delete Order Item
  */
 
 router.delete('/order-items/:id', async (req: express.Request, res: express.Response): Promise<void> => {
     const orderItemId = parseInt(req.params.id);
+
+    try {
+        const items = await getOrderItemsByOrderId(orderItemId);
+    } catch (error) {
+        res.status(404);
+        res.json({ error: error.message });
+    }
     try {
         await deleteOrderItem(orderItemId);
         res.status(200);
@@ -920,17 +1038,48 @@ router.get('/users/name/:name', async (req: express.Request, res: express.Respon
  *     responses:
  *       200:
  *         description: User deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: User deleted successfully
  *       404:
- *         description: Cannot delete user
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: User not found
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
  */
 router.delete('/users/:id', async (req: express.Request, res: express.Response): Promise<void> => {
-    const userId = parseInt(req.params.id);
+    const userId:number = parseInt(req.params.id);
+    try {
+        const user:User = await findUser(userId);
+    } catch (error) {
+        res.status(404);
+        res.json({ error: error.message });
+    }
     try {
         await deleteUser(userId);
         res.status(200);
         res.json({ message: "User deleted successfully" });
     } catch (error) {
-        res.status(404);
+        res.status(500);
         res.json({ error: error.message });
     }
 });
@@ -990,10 +1139,10 @@ router.delete('/users/:id', async (req: express.Request, res: express.Response):
  *               properties:
  *                 error:
  *                   type: string
- *                   example: User not found
+ *                   example: User not found or password update failed
  */
 
-router.put('/users/:id/password', async (req, res) => {
+router.put('/users/:id/password',async (req: express.Request, res: express.Response): Promise<void> => {
     const userId = parseInt(req.params.id);
     const { newPassword } = req.body;
 
@@ -1079,7 +1228,7 @@ router.put('/users/:id/password', async (req, res) => {
  *                   example: No books found
  */
 
-router.get('/books', async (req, res) => {
+router.get('/books', async (req: express.Request, res: express.Response): Promise<void> => {
     try {
         const books = await showBooks();
         if (books.length === 0) {
@@ -1161,7 +1310,7 @@ router.get('/books', async (req, res) => {
  *                   type: string
  *                   example: Book not found
  */
-router.get('/books/reference/:reference', async (req, res) => {
+router.get('/books/reference/:reference', async (req: express.Request, res: express.Response): Promise<void> => {
     const bookRef = parseInt(req.params.reference);
     try {
         const book = await findBook(bookRef);
@@ -1241,7 +1390,7 @@ router.get('/books/reference/:reference', async (req, res) => {
  *                   type: string
  */
 
-router.get('/books/search', async (req, res) => {
+router.get('/books/search',async (req: express.Request, res: express.Response): Promise<void> => {
     const bookTitle = req.query.title;
     try {
         const books = await findBookByTitle(bookTitle);
@@ -1338,13 +1487,13 @@ router.get('/books/search', async (req, res) => {
  *                   type: string
  *                   example: Error creating book
  */
-router.post('/books', async (req, res) => {
+router.post('/books', async (req: express.Request, res: express.Response): Promise<void> => {
     const { reference, title, author, editor, year, price, description,cover } = req.body;
 
     if (!reference || !title || !author || !editor || !year || !price || !description || !cover) {
         res.status(400);
         res.json({ error: 'Missing fields to create book entry' });
-        return res;
+        return;
     }
 
     try {
@@ -1393,7 +1542,7 @@ router.post('/books', async (req, res) => {
      *                 error:
      *                   type: string
      */
-    router.delete('/books/:reference', async (req, res) => {
+    router.delete('/books/:reference', async (req: express.Request, res: express.Response): Promise<void> => {
         const bookRef = parseInt(req.params.reference);
         try {
             await deleteBook(bookRef);
@@ -1439,7 +1588,7 @@ router.post('/books', async (req, res) => {
      *                 error:
      *                   type: string
      */
-    router.delete('/books/title/:title', async (req, res) => {
+    router.delete('/books/title/:title', async (req: express.Request, res: express.Response): Promise<void> => {
         const bookTitle = req.params.title;
         try {
             await deleteBookByTitle(bookTitle);

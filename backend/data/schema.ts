@@ -7,7 +7,7 @@ import pool from "./connect"
 
 
 // create table 'users'
-const createUsers = `
+const createUsers: string = `
     create table if not exists users(
                                         id SERIAL primary key,
                                         username TEXT not null unique,
@@ -17,7 +17,7 @@ const createUsers = `
 `;
 
 // create table 'books'
-const createBooks = `
+const createBooks: string = `
     create table if not exists books(
                                         reference INTEGER primary key,
                                         title TEXT not null,
@@ -35,7 +35,7 @@ const createBooks = `
 
 
 // create table book 'orders'
-const createOrders = `
+const createOrders: string = `
   CREATE TABLE IF NOT EXISTS orders (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -45,7 +45,7 @@ const createOrders = `
 `;
 
 // // create table 'orderItems'
-const createOrderItems = `
+const createOrderItems: string = `
   CREATE TABLE IF NOT EXISTS order_items (
     id SERIAL PRIMARY KEY,
     order_id INTEGER NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
@@ -68,7 +68,7 @@ const createOrderItems = `
 
 // To avoid error for Top-level await expressions
 // we wrap this into an async function
-(async () => {
+(async ():Promise<void> => {
     await pool.query(createUsers);
     await pool.query(createBooks);
     await pool.query(createOrders);
