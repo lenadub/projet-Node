@@ -8,6 +8,8 @@ The project contains a frontend app (React.js) and a backend API server (node.js
 
 #### Start the Backend
 
+**Prerequisite : the backend runs on top of a PostgreSQL database. PostgreSQL must be installed**
+
 To initialize the backend environment and subsequently run the backend if required, please run the command below using the Microsoft Windows  command terminal :
 ```bash
 > cd backend
@@ -49,16 +51,18 @@ tsx index.js
 By default, the backend listens on port 3000.
 
 Note this backend was tested on Windows 11 and with :
-npm :  version 10.9.0
-tsx :  version  4.19.2
-node : version 22.9.0
+* npm :  version 10.9.0
+* tsx :  version  4.19.2
+* node : version 22.9.0
+* psql :  17.2
 
 
 #### Start the Frontend
 
 ```bash
-> cd frontend
-> npm run dev
+cd frontend
+npm install
+npm run dev
 # Connect your browser to http://localhost:5173
 # Type CONTROL C to stop the server
 ```
