@@ -1,41 +1,37 @@
-// import classes from "../styles/OrdersPage.module.css"
-//
-// function OrdersPage() {
-//   return(
-//     <div className={classes.orders}>No orders yet</div>
-//   )
-// }
-//
-// export default OrdersPage
-
+// Import necessary hooks from React and CSS module
 import { useState, useEffect } from "react";
 import classes from "../styles/OrdersPage.module.css";
 
+// Define TypeScript interfaces for order items and orders
 interface OrderItem {
-  bookId: number;
-  title: string;
-  author: string;
-  cover: string;
-  quantity: number;
-  price: number;
+  bookId: number;      // Unique identifier for the book
+  title: string;       // Book title
+  author: string;      // Book author
+  cover: string;       // Book cover image URL
+  quantity: number;    // Quantity ordered
+  price: number;       // Price per item
 }
 
 interface Order {
-  id: number;
-  status: string;
-  items: OrderItem[];
-  totalPrice: number;
-  createdAt: string; // Assuming the API returns the creation date
+  id: number;          // Unique order identifier
+  status: string;      // Order status (e.g. pending, completed)
+  items: OrderItem[];  // Array of items in the order
+  totalPrice: number;  // Total price of the order
+  createdAt: string;   // Order creation timestamp
 }
 
 function OrderPage() {
+  // State management for orders, loading state and errors
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Async function to get orders data
     const fetchOrders = async () => {
       try {
+        // Fetch orders for user with ID 1 for the time being
+        // To be changed when users will be handled properly
         const response = await fetch("http://localhost:3000/orders/user/1");
 
         if (!response.ok) {
@@ -48,8 +44,10 @@ function OrderPage() {
           throw new Error("No orders yet.");
         }
 
+        // Process each order to get full details
         const processedOrders: Order[] = await Promise.all(
             ordersData.map(async (order: any) => {
+              // Fetch items for each order
               const orderItemsResponse = await fetch(
                   `http://localhost:3000/order-items/order/${order.id}`
               );
@@ -60,6 +58,7 @@ function OrderPage() {
 
               const itemsData = await orderItemsResponse.json();
 
+              // Get book details for each Order item
               const itemsWithTitles = await Promise.all(
                   itemsData.map(async (item: any) => {
                     const bookResponse = await fetch(
@@ -72,14 +71,15 @@ function OrderPage() {
 
                     const bookData = await bookResponse.json();
                     return {
-                      ...item,
+                      ...item,  // tip found on 
                       title: bookData.title,
-                      author: bookData.author,
+                      author: bookData.author, 
                       cover: bookData.cover,
                     };
                   })
               );
 
+              // Calculate total price for the order
               const totalPrice = parseFloat(
                   itemsWithTitles
                       .reduce(
@@ -89,6 +89,7 @@ function OrderPage() {
                       .toFixed(2)
               );
 
+              // Return processed order object
               return {
                 id: order.id,
                 status: order.status,
@@ -100,7 +101,7 @@ function OrderPage() {
         );
 
         setOrders(processedOrders);
-        setError(null); // Clear any previous error
+        setError(null);
       } catch (error: any) {
         setError(error.message);
       } finally {
@@ -109,8 +110,9 @@ function OrderPage() {
     };
 
     fetchOrders();
-  }, []);
+  }, []); // 
 
+  // Render orders page based on state above
   return (
       <div className={classes.ordersPage}>
         <h2>Your Orders:</h2>
@@ -121,6 +123,7 @@ function OrderPage() {
         ) : orders.length === 0 ? (
             <div className={classes.orders}>No orders yet</div>
         ) : (
+            // Map through orders and render each order's details
             orders.map((order) => (
                 <div key={order.id} className={classes.orderContainer}>
                   <h3>Order #{order.id}</h3>
@@ -153,6 +156,3 @@ function OrderPage() {
 }
 
 export default OrderPage;
-
-
-
