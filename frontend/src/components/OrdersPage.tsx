@@ -91,16 +91,16 @@ function OrderPage() {
 
               // Return processed order object
               return {
-                id: order.id,
+                id: order.id,  //order id
                 status: order.status,
-                items: itemsWithTitles,
+                items: itemsWithTitles,  // order Items
                 totalPrice,
                 createdAt: order.created_at,
               };
             })
         );
 
-        setOrders(processedOrders);
+        setOrders(processedOrders); // setOrders =  the state updater created by the useState hook
         setError(null);
       } catch (error: any) {
         setError(error.message);
