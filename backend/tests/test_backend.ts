@@ -33,7 +33,7 @@ app.use('/', router);
 
 describe('API Routes', () => {
     ////////////////// ROOT ///////////////
-    it('should return API status', async () => {
+    it('should return API status', async ():Promise<void> => {
      //   console.log(app);
       //  console.log(request);
         const response = await request(app).get('/');
@@ -41,7 +41,7 @@ describe('API Routes', () => {
         expect(response.body).toEqual({status: 200, message: 'API server OK'});
     });
     ////////////////// USERS ///////////////
-    it('should create a user', async () => {
+    it('should create a user', async ():Promise<void> => {
         const userData = { username: 'john_doe', email: 'john@example.com', password: 'password123' };
         const response = await request(app).post('/users').send(userData);
         expect(response.statusCode).toBe(201);
@@ -49,7 +49,7 @@ describe('API Routes', () => {
        // expect(response.body.username).toBe(userData.username);
     });
 
-    it('should fail to create a user with a duplicate username', async () => {
+    it('should fail to create a user with a duplicate username', async ():Promise<void> => {
         const userData = { username: 'john_doe', email: 'john@example.com', password: 'password123' };
 
         // Attempt to create the same user again
@@ -60,7 +60,7 @@ describe('API Routes', () => {
     });
 
 
-    it('should fail to create a user with missing required fields', async () => {
+    it('should fail to create a user with missing required fields', async ():Promise<void> => {
         // Missing required fields: username and email
         const incompleteUserData = { password: 'password123' };
 
@@ -71,7 +71,7 @@ describe('API Routes', () => {
     });
 
 
-    it('should retrieve a user by name, then retrieve using ID, and finally delete by ID', async () => {
+    it('should retrieve a user by name, then retrieve using ID, and finally delete by ID', async ():Promise<void> => {
         const userName = 'john_doe';
 
         // Step 1: Retrieve the user by name
@@ -93,21 +93,21 @@ describe('API Routes', () => {
     });
 
 //     ////////////////// ORDERS ///////////////
-    it('should create an order', async () => {
+    it('should create an order', async ():Promise<void> => {
         const orderData = { userId: 1, status: 'pending' };
         const response = await request(app).post('/orders').send(orderData);
         expect(response.statusCode).toBe(201); // Expecting HTTP 201
         expect(response.body).toHaveProperty('id'); // ID returned
     });
 
-    it('should retrieve orders by user ID', async () => {
+    it('should retrieve orders by user ID', async ():Promise<void> => {
         const userId = 1; // Ensure this user ID exists in your test database
         const response = await request(app).get(`/orders/user/${userId}`);
         expect(response.statusCode).toBe(200); // Expecting HTTP 200 
         expect(Array.isArray(response.body)).toBe(true); // Array of orders
     });
 
-    it('should delete an order by ID', async () => {
+    it('should delete an order by ID', async ():Promise<void> => {
         const orderId = 1; // Ensure this order ID exists in your test database
         const response = await request(app).delete(`/orders/${orderId}`);
         expect(response.statusCode).toBe(200); // Expecting HTTP 200 
@@ -115,7 +115,7 @@ describe('API Routes', () => {
     });
 
 //     ////////////////// BOOKS ///////////////
-    it('should create a book', async () => {
+    it('should create a book', async ():Promise<void> => {
         const bookData = {
             reference:13,
             title: 'Test Book',
@@ -132,7 +132,7 @@ describe('API Routes', () => {
         // expect(response.body.title).toBe(bookData.title);
     });
 
-    it('should fail to create a book with missing required fields', async () => {
+    it('should fail to create a book with missing required fields', async ():Promise<void> => {
         // Missing required fields: reference, cover, title and author
         const incompleteBookData = {
             editor: 'Test Editor',
@@ -173,7 +173,7 @@ describe('API Routes', () => {
     });
 
 
-    it('should retrieve all books', async () => {
+    it('should retrieve all books', async () :Promise<void>=> {
         const response = await request(app).get('/books');
         expect(response.statusCode).toBe(200); // Expecting HTTP 200 
         expect(Array.isArray(response.body)).toBe(true);
