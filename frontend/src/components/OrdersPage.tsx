@@ -71,7 +71,7 @@ function OrderPage() {
 
                     const bookData = await bookResponse.json();
                     return {
-                      ...item,  // tip found on 
+                      ...item,  // // Spreads all existing properties from item : tip found on https://www.w3schools.com/react/react_es6_spread.asp 
                       title: bookData.title,
                       author: bookData.author, 
                       cover: bookData.cover,
