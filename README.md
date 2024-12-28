@@ -46,7 +46,12 @@ cd backend
 tsx index.js
 ```
 
-By default, the backend listens on port 3000
+By default, the backend listens on port 3000.
+
+Note this backend was tested on Windows 11 and with :
+npm :  version 10.9.0
+tsx :  version  4.19.2
+node : version 22.9.0
 
 
 #### Start the Frontend
