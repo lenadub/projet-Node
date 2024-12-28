@@ -20,14 +20,15 @@ interface Order {
   createdAt: string;   // Order creation timestamp
 }
 
+// Defining the OrderPage behavior
 function OrderPage() {
-  // State management for orders, loading state and errors
+  // State management for orders, state and errors
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Async function to get orders data
+    // Get orders data from backend
     const fetchOrders = async () => {
       try {
         // Fetch orders for user with ID 1 for the time being
@@ -44,10 +45,10 @@ function OrderPage() {
           throw new Error("No orders yet.");
         }
 
-        // Process each order to get full details
+        // Process each order to get  details on orderItems
         const processedOrders: Order[] = await Promise.all(
             ordersData.map(async (order: any) => {
-              // Fetch items for each order
+              // Fetch items for each order from backend
               const orderItemsResponse = await fetch(
                   `http://localhost:3000/order-items/order/${order.id}`
               );
@@ -86,7 +87,7 @@ function OrderPage() {
                           (total: number, item: any) => total + item.price * item.quantity,
                           0
                       )
-                      .toFixed(2)
+                      .toFixed(2) // two decimal digits after comma
               );
 
               // Return processed order object
@@ -109,6 +110,7 @@ function OrderPage() {
       }
     };
 
+     // Calling the fetch function to initiate the data fetching
     fetchOrders();
   }, []); // 
 
@@ -155,4 +157,5 @@ function OrderPage() {
   );
 }
 
+// Exporting the Header component for use in other parts of the application
 export default OrderPage;
