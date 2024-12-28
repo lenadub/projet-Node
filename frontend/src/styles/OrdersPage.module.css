@@ -22,6 +22,7 @@
   align-items: center;
 }
 
+/* Styles for the Order Container */
 .orderContainer {
   margin-left: 20px;
   max-width: 800px;
@@ -34,6 +35,7 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+/* Styles for the Order Items */
 .orderItems {
   margin-top: 10px;
   padding-left: 10px;
