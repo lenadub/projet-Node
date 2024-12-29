@@ -67,3 +67,6 @@ npm run dev
 # Connect your browser to http://localhost:5173
 # Type CONTROL C to stop the server
 ```
+
+## The Demo Project Video
+[![Watch the video](https://i.sstatic.net/Vp2cE.png)](https://youtu.be/vt5fpE0bzSY)
