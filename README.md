@@ -69,4 +69,4 @@ npm run dev
 ```
 
 ## The Demo Project Video
-[![Watch the video](https://i.sstatic.net/Vp2cE.png)](https://youtu.be/vt5fpE0bzSY)
+[![Watch the video](https://github.com/lenadub/projet-Node/blob/develop/videos/Projet%20node%20and%20react%2029122024.mp4)
